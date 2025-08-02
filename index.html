@@ -279,8 +279,15 @@
             font-size: 84px;
             color: #fff;
             text-shadow: 6px 6px 12px rgba(0,0,0,0.8);
-            margin-bottom: 20px;
+            margin-bottom: 40px;
             letter-spacing: 6px;
+        }
+        
+        .difficulty-selector {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            justify-content: center;
         }
         
         .menu-buttons {
@@ -505,6 +512,7 @@
     
     <div id="startScreen">
         <h1>HOCKEY SHOOTOUT</h1>
+        <p style="color: #ccc; margin: -20px 0 30px 0; font-size: 18px;">SELECT DIFFICULTY</p>
         <div class="difficulty-selector">
             <button class="difficulty-button" onclick="setDifficulty('easy')">EASY</button>
             <button class="difficulty-button active" onclick="setDifficulty('medium')">MEDIUM</button>
@@ -557,14 +565,22 @@
         
         // Load stats from localStorage
         function loadStats() {
-            const saved = localStorage.getItem('hockeyStats');
-            if (saved) {
-                stats = JSON.parse(saved);
+            try {
+                const saved = localStorage.getItem('hockeyStats');
+                if (saved) {
+                    stats = JSON.parse(saved);
+                }
+            } catch (e) {
+                // Ignore localStorage errors
             }
         }
         
         function saveStats() {
-            localStorage.setItem('hockeyStats', JSON.stringify(stats));
+            try {
+                localStorage.setItem('hockeyStats', JSON.stringify(stats));
+            } catch (e) {
+                // Ignore localStorage errors
+            }
         }
         
         loadStats();
@@ -681,7 +697,7 @@
             
             // Update button states
             document.querySelectorAll('.difficulty-button').forEach(btn => btn.classList.remove('active'));
-            event.target.classList.add('active');
+            document.querySelector(`.difficulty-button[onclick*="${level}"]`).classList.add('active');
         }
         
         function togglePause() {
@@ -722,12 +738,53 @@
         }
         
         function playSound(soundName) {
-            if (!soundEnabled) return;
+            if (!soundEnabled || !audioContext) return;
             
-            const sound = sounds[soundName];
-            if (sound) {
-                sound.currentTime = 0;
-                sound.play().catch(() => {}); // Ignore errors
+            try {
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                switch(soundName) {
+                    case 'shot':
+                        oscillator.frequency.setValueAtTime(200, audioContext.currentTime);
+                        oscillator.frequency.exponentialRampToValueAtTime(100, audioContext.currentTime + 0.1);
+                        gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+                        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+                        oscillator.start(audioContext.currentTime);
+                        oscillator.stop(audioContext.currentTime + 0.1);
+                        break;
+                    case 'goal':
+                        oscillator.frequency.setValueAtTime(523.25, audioContext.currentTime); // C5
+                        oscillator.frequency.setValueAtTime(659.25, audioContext.currentTime + 0.1); // E5
+                        oscillator.frequency.setValueAtTime(783.99, audioContext.currentTime + 0.2); // G5
+                        gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+                        gainNode.gain.setValueAtTime(0.3, audioContext.currentTime + 0.3);
+                        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.4);
+                        oscillator.start(audioContext.currentTime);
+                        oscillator.stop(audioContext.currentTime + 0.4);
+                        break;
+                    case 'save':
+                        oscillator.frequency.setValueAtTime(150, audioContext.currentTime);
+                        oscillator.type = 'sawtooth';
+                        gainNode.gain.setValueAtTime(0.2, audioContext.currentTime);
+                        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.2);
+                        oscillator.start(audioContext.currentTime);
+                        oscillator.stop(audioContext.currentTime + 0.2);
+                        break;
+                    case 'post':
+                        oscillator.frequency.setValueAtTime(1000, audioContext.currentTime);
+                        oscillator.type = 'square';
+                        gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+                        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.05);
+                        oscillator.start(audioContext.currentTime);
+                        oscillator.stop(audioContext.currentTime + 0.05);
+                        break;
+                }
+            } catch (e) {
+                // Ignore audio errors
             }
         }
         

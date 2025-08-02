@@ -97,13 +97,143 @@
         
         .controls {
             position: absolute;
-            bottom: 80px;
+            bottom: 220px;
             left: 50%;
             transform: translateX(-50%);
             text-align: center;
-            font-size: 16px;
+            font-size: 14px;
             color: #ccc;
             text-shadow: 1px 1px 2px #000;
+        }
+        
+        .shot-selector {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 10px;
+            pointer-events: all;
+        }
+        
+        .shot-button {
+            background: rgba(0, 0, 0, 0.7);
+            border: 2px solid #666;
+            color: #fff;
+            padding: 15px 20px;
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border-radius: 5px;
+            pointer-events: all;
+        }
+        
+        .shot-button.active {
+            background: #ff0000;
+            border-color: #ff0000;
+            transform: scale(1.1);
+            box-shadow: 0 0 20px rgba(255,0,0,0.6);
+        }
+        
+        .pause-button {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            background: rgba(0, 0, 0, 0.7);
+            border: 2px solid #fff;
+            border-radius: 5px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            pointer-events: all;
+            z-index: 10;
+        }
+        
+        .settings-panel {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.95);
+            padding: 30px;
+            border-radius: 10px;
+            border: 2px solid #fff;
+            display: none;
+            z-index: 100;
+            pointer-events: all;
+        }
+        
+        .settings-panel h2 {
+            margin-bottom: 20px;
+            text-align: center;
+            font-size: 36px;
+        }
+        
+        .setting-row {
+            margin: 15px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .setting-label {
+            font-size: 18px;
+            min-width: 150px;
+        }
+        
+        .slider {
+            width: 200px;
+            height: 30px;
+            -webkit-appearance: none;
+            background: #333;
+            outline: none;
+            border-radius: 15px;
+        }
+        
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 25px;
+            height: 25px;
+            background: #ff0000;
+            cursor: pointer;
+            border-radius: 50%;
+        }
+        
+        .toggle-button {
+            background: #333;
+            border: none;
+            color: #fff;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 5px;
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 16px;
+        }
+        
+        .toggle-button.active {
+            background: #ff0000;
+        }
+        
+        .aim-indicator {
+            position: absolute;
+            pointer-events: none;
+            opacity: 0.3;
+        }
+        
+        .aim-dot {
+            width: 10px;
+            height: 10px;
+            background: #ffff00;
+            border-radius: 50%;
+            position: absolute;
+            transform: translate(-50%, -50%);
+            box-shadow: 0 0 10px #ffff00;
         }
         
         .announcement {
@@ -153,7 +283,14 @@
             letter-spacing: 6px;
         }
         
-        .start-button {
+        .menu-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 30px;
+        }
+        
+        .menu-button {
             background: #ff0000;
             border: none;
             color: #fff;
@@ -162,33 +299,67 @@
             font-size: 24px;
             cursor: pointer;
             transition: all 0.3s;
-            margin: 10px;
             letter-spacing: 2px;
             text-transform: uppercase;
+            min-width: 250px;
         }
         
-        .start-button:hover {
+        .menu-button:hover {
             background: #ff3333;
             transform: scale(1.05);
             box-shadow: 0 8px 20px rgba(255,0,0,0.4);
         }
         
-        .mode-select {
+        .difficulty-selector {
             display: flex;
-            flex-direction: column;
-            gap: 15px;
-            margin-top: 30px;
+            gap: 10px;
+            margin-top: 20px;
         }
         
-        .stick-indicator {
+        .difficulty-button {
+            background: #333;
+            border: 2px solid #666;
+            color: #fff;
+            padding: 10px 20px;
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 18px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .difficulty-button.active {
+            background: #ff0000;
+            border-color: #ff0000;
+        }
+        
+        .stats-display {
             position: absolute;
-            bottom: 10px;
-            right: 20px;
+            bottom: 20px;
+            left: 20px;
             font-size: 14px;
             color: #888;
-            background: rgba(0, 0, 0, 0.7);
-            padding: 5px 10px;
-            border-radius: 5px;
+            text-shadow: 1px 1px 2px #000;
+        }
+        
+        .achievement-popup {
+            position: absolute;
+            top: 100px;
+            right: 20px;
+            background: linear-gradient(135deg, #ffd700, #ffed4e);
+            color: #000;
+            padding: 15px 25px;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: bold;
+            opacity: 0;
+            transform: translateX(300px);
+            transition: all 0.5s;
+            z-index: 50;
+        }
+        
+        .achievement-popup.show {
+            opacity: 1;
+            transform: translateX(0);
         }
         
         .rebound-alert {
@@ -213,6 +384,28 @@
             100% { opacity: 0; transform: translate(-50%, -50%) scale(1); }
         }
         
+        .touch-indicator {
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            border: 3px solid rgba(255, 255, 255, 0.5);
+            border-radius: 50%;
+            pointer-events: none;
+            transform: translate(-50%, -50%);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .touch-indicator.show {
+            opacity: 1;
+            animation: touchPulse 0.5s ease-out;
+        }
+        
+        @keyframes touchPulse {
+            0% { transform: translate(-50%, -50%) scale(1); }
+            100% { transform: translate(-50%, -50%) scale(1.5); opacity: 0; }
+        }
+        
         @media (max-width: 768px) {
             .score-item {
                 font-size: 18px;
@@ -223,13 +416,27 @@
                 font-size: 48px;
             }
             
-            .start-button {
+            .menu-button {
                 font-size: 20px;
                 padding: 15px 30px;
             }
             
             .announcement {
                 font-size: 48px;
+            }
+            
+            .shot-button {
+                font-size: 14px;
+                padding: 12px 16px;
+            }
+            
+            .settings-panel {
+                width: 90%;
+                padding: 20px;
+            }
+            
+            .slider {
+                width: 150px;
             }
         }
     </style>
@@ -245,8 +452,14 @@
         </div>
     </div>
     
+    <button class="pause-button" id="pauseBtn" onclick="togglePause()">⏸</button>
+    
     <div class="announcement" id="announcement"></div>
     <div class="rebound-alert" id="reboundAlert">REBOUND!</div>
+    <div class="achievement-popup" id="achievementPopup"></div>
+    
+    <div class="aim-indicator" id="aimIndicator"></div>
+    <div class="touch-indicator" id="touchIndicator"></div>
     
     <div class="shot-type" id="shotType">WRIST SHOT</div>
     <div class="power-meter">
@@ -254,17 +467,54 @@
     </div>
     
     <div class="controls">
-        HOLD TO CHARGE • SWIPE TO CHANGE SHOT TYPE • RELEASE TO SHOOT
+        HOLD TO CHARGE • RELEASE TO SHOOT
     </div>
     
-    <div class="stick-indicator" id="stickAngle">ANGLE: 0°</div>
+    <div class="shot-selector">
+        <button class="shot-button active" id="wristBtn" onclick="selectShot('wrist')">WRIST</button>
+        <button class="shot-button" id="slapBtn" onclick="selectShot('slap')">SLAP</button>
+        <button class="shot-button" id="backhandBtn" onclick="selectShot('backhand')">BACKHAND</button>
+    </div>
+    
+    <div class="stats-display" id="statsDisplay"></div>
+    
+    <div class="settings-panel" id="settingsPanel">
+        <h2>SETTINGS</h2>
+        <div class="setting-row">
+            <span class="setting-label">SOUND</span>
+            <button class="toggle-button active" id="soundToggle" onclick="toggleSound()">ON</button>
+        </div>
+        <div class="setting-row">
+            <span class="setting-label">HAPTIC</span>
+            <button class="toggle-button active" id="hapticToggle" onclick="toggleHaptic()">ON</button>
+        </div>
+        <div class="setting-row">
+            <span class="setting-label">AIM ASSIST</span>
+            <input type="range" class="slider" id="aimSlider" min="0" max="100" value="50">
+        </div>
+        <div class="setting-row">
+            <span class="setting-label">SENSITIVITY</span>
+            <input type="range" class="slider" id="sensitivitySlider" min="50" max="150" value="100">
+        </div>
+        <div class="setting-row">
+            <span class="setting-label">PERFORMANCE</span>
+            <button class="toggle-button active" id="performanceToggle" onclick="togglePerformance()">HIGH</button>
+        </div>
+        <button class="menu-button" onclick="resumeGame()">RESUME</button>
+    </div>
     
     <div id="startScreen">
         <h1>HOCKEY SHOOTOUT</h1>
-        <div class="mode-select">
-            <button class="start-button" onclick="startGame('classic')">CLASSIC MODE</button>
-            <button class="start-button" onclick="startGame('timeattack')">TIME ATTACK</button>
-            <button class="start-button" onclick="startGame('sudden')">SUDDEN DEATH</button>
+        <div class="difficulty-selector">
+            <button class="difficulty-button" onclick="setDifficulty('easy')">EASY</button>
+            <button class="difficulty-button active" onclick="setDifficulty('medium')">MEDIUM</button>
+            <button class="difficulty-button" onclick="setDifficulty('hard')">HARD</button>
+        </div>
+        <div class="menu-buttons">
+            <button class="menu-button" onclick="startGame('classic')">CLASSIC MODE</button>
+            <button class="menu-button" onclick="startGame('timeattack')">TIME ATTACK</button>
+            <button class="menu-button" onclick="startGame('sudden')">SUDDEN DEATH</button>
+            <button class="menu-button" onclick="startGame('practice')">PRACTICE MODE</button>
         </div>
     </div>
     
@@ -275,6 +525,7 @@
         // Game state
         let gameMode = 'classic';
         let gameActive = false;
+        let gamePaused = false;
         let score = 0;
         let shots = 0;
         let saves = 0;
@@ -283,8 +534,40 @@
         let mouseX = 0;
         let mouseY = 0;
         let stickAngle = 0;
-        let shotType = 'wrist'; // wrist, slap, backhand
+        let shotType = 'wrist';
         let chargeStartTime = 0;
+        let difficulty = 'medium';
+        let timeLeft = 60;
+        let shotsLeft = 5;
+        
+        // Settings
+        let soundEnabled = true;
+        let hapticEnabled = true;
+        let aimAssist = 0.5;
+        let sensitivity = 1.0;
+        let performanceMode = 'high';
+        
+        // Stats tracking
+        let stats = {
+            totalGoals: 0,
+            totalShots: 0,
+            bestScore: 0,
+            achievements: []
+        };
+        
+        // Load stats from localStorage
+        function loadStats() {
+            const saved = localStorage.getItem('hockeyStats');
+            if (saved) {
+                stats = JSON.parse(saved);
+            }
+        }
+        
+        function saveStats() {
+            localStorage.setItem('hockeyStats', JSON.stringify(stats));
+        }
+        
+        loadStats();
         
         // 3D perspective constants
         const PERSPECTIVE = 800;
@@ -301,12 +584,26 @@
             targetY: -20,
             vx: 0,
             vy: 0,
-            stance: 'ready', // ready, butterfly, glove, blocker
-            saveAnimation: 0
+            stance: 'ready',
+            saveAnimation: 0,
+            speed: 0.1,
+            prediction: 0.7
         };
         
         let particles = [];
         let rebounds = [];
+        let iceMarks = [];
+        
+        // Sound system
+        const sounds = {
+            shot: new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBySNy+3VhDQGHGS87OOlURcPUqzn5rJcHAg1ktLuwHkpBBh0w8/UjzcHHGm98OScTgwOUqvq6rJaGwUxgtbuyHkpBBh0w8/UjzcHHGm98OScTgwOUqvq6rJaGwUxgtbuyHkpBBh0w8/UjzcHHGm98OScTgwOUqvq6rJaGwUxgtbuyHkpBBh0w8/UjzcHHGm98OScTgwOU6zr6bFaGwUxgtbuyHkpBBh0w8/UjzcHHGm98OScTgwOUqvq6rJaGwUxgtbuyHkpBBh0w8/UjzcHHGm98OScTgwOUqvq6rJaGwUxgtbuyHkpBBh0w8/UjzcHHGm98OScTgwOUqvq6rJaGwUxgtbuyHkpBBh0w8/UjzcHHGm98OScTgwOUqvq6rJaGwUxgtbuyHkpBBh0w8/UjzcHHGm98OScTgwOUqvq6rJaGwUxgtbuyHkpBBh0w8/UjzcHHGm98OScTgwOUqvq6rJaGwUxgNPtwXUnBBh0w8/UjzcHHGm98OScTgwOUqvq6rJaGwUxgtbuyHkpBBh0w8/UjzcHHGm98OScTgwOUqvq6rJaGwUxgtbuyHkpBBh0w8/UjzcHHGm98OScTgwOUqvq6rJaGwUxgtbuyHkpBBh0w8/UjzcHHGm98OScTgwOUqvq6rJaGwUxgtbuyHkpBBh0w8/UjzcHHGm98OScTgwOUqvq6rJaGwUxgtbuyHkpBBh0w8/UjzcHHGm98OScTgwOUqvq6rJaGwUxgtbuyHkpBBh0w8/UjzcHHGm98OScTgwOUqvq6rJaGwUxgtbuyHkpBBh0w8/UjzcHHGm98OScTgwOUqvq6rJaGwUxgtbuyHkpBBh0w8/UjzcHHGm98OScTgwOUqvq6rJaGwU1h9jsxHcmAh1zxdDSizUGHG298eCcTAwPVqzn47BYGwUyhtrvyHgpBBh0w8/UjzcHHGm98OScTgwOUqvq6rJaGwUxgtbuyHkpBBh0w8/UjzcHHGm98OScTgwOUqvq6rJaGwUxgtbuyHkpBBh0w8/UjzcHHGm98OScTgwOUqvq6rJaGwUxgtbuyHkpBBh0w8/UjzcHHGm98OScTgwOUqvq6rJaGwUxgtbuyHkpBBh0w8/UjzcHHGm98OScTgwOUqvq6rJaGwUxgtbuyHkpBBl1w8/UjzcHHGm98OScTgwOUqvq6rJaGwUxgtbuyHkpBBh0w8/UjzcHHGm98OScTgwOUqvq6rJaGwUxgtbvyHkpBBh0w8/UjzcHHGm98OScTgwOUqvq6rJaGwUxgtbuyHkpBBh0w8/UjzcHHGm98OScTgwOUqvq6rJaGwUxgtbuyHkpBBh0w8/UjzcHHGm98OScTgwOUqvq6rJaGwUxgtbuyHkpBBh0w8/UjzcHHGm98OScTgwOUqvq6rJaGwUxgtbuyHkpBBh0w8/UjzcHHGm98OScTgwOUqvq6rJaGwUxgtbuyHkpBBh0w8/UjzcHHGm98OScTgwOUqvq6rJaGwUxgtbuyHkpBBh0w8/UjzcHHGm98OScTgwOUqvq6rJaGwUxgtbuyHkpBBh0w8/UjzcHHGm98OScTgwOUqvq6rJaGwUxgtbuyHkpBBh0w8/UjzcHHGm98OScTgwOUqvq6rJaGwUy'),
+            goal: new Audio('data:audio/wav;base64,UklGRiQFAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQAFAACAAAAA//8AAAEAAQD//wAAAQAAAAEAAQD//wAAAQAAAAEA//8AAAEAAQABAAEA//8AAAEAAQABAAEA//8AAAEAAAABAAEA//8AAAEAAAABAAEA//8AAAEAAAABAAEA//8AAAEAAAABAAEA//8AAAEAAAABAAEA//8BAAAA//8AAAEAAQABAAEA//8AAAEAAQABAAEA//8AAAEAAQABAAEA//8AAAEAAQABAAEA//8AAAEAAQABAAEA//8AAAEAAQABAAEA//8AAAEAAQABAAEA//8AAAEAAQABAAEA//8AAAEAAQABAAEA//8AAAEAAQABAAEA//8AAAEAAQABAAEA//8AAAEAAQABAAEA//8AAAEAAQABAAEA//8AAAEAAQABAAEA//8AAAEAAQABAAEA//8AAAEAAQABAAEA//8AAAEAAQABAAEA'),
+            save: new Audio('data:audio/wav;base64,UklGRhwGAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YfgFAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeS'),
+            post: new Audio('data:audio/wav;base64,UklGRjQCAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YRACAABQUFBQUFBQUFBQUFBQUFBQUFDz8/Pz8/Pz8/Pz8/Pz8/Pz8/NQUFBQUFBQUFBQUFBQUFBQUFDz8/Pz8/Pz8/Pz8/Pz8/Pz8/M=')
+        };
+        
+        // Audio context for haptic feedback
+        let audioContext;
         
         // Canvas setup
         function resizeCanvas() {
@@ -317,10 +614,7 @@
         window.addEventListener('resize', resizeCanvas);
         resizeCanvas();
         
-        // Input handling
-        let touchStartX = 0;
-        let touchStartY = 0;
-        
+        // Touch/Mouse handling
         canvas.addEventListener('mousedown', startCharge);
         canvas.addEventListener('mouseup', shoot);
         canvas.addEventListener('mousemove', updateAim);
@@ -328,10 +622,9 @@
         canvas.addEventListener('touchstart', (e) => {
             e.preventDefault();
             const touch = e.touches[0];
-            touchStartX = touch.clientX;
-            touchStartY = touch.clientY;
             mouseX = touch.clientX;
             mouseY = touch.clientY;
+            showTouchIndicator(mouseX, mouseY);
             startCharge();
         });
         
@@ -345,41 +638,124 @@
             const touch = e.touches[0];
             mouseX = touch.clientX;
             mouseY = touch.clientY;
-            
-            // Detect swipe for shot type change
-            const swipeX = touch.clientX - touchStartX;
-            if (Math.abs(swipeX) > 50) {
-                if (swipeX > 0) {
-                    changeShotType('next');
-                } else {
-                    changeShotType('prev');
-                }
-                touchStartX = touch.clientX;
-            }
-            
             updateAim();
         });
         
-        function changeShotType(direction) {
-            const types = ['wrist', 'slap', 'backhand'];
-            let index = types.indexOf(shotType);
+        function showTouchIndicator(x, y) {
+            const indicator = document.getElementById('touchIndicator');
+            indicator.style.left = x + 'px';
+            indicator.style.top = y + 'px';
+            indicator.classList.add('show');
+            setTimeout(() => indicator.classList.remove('show'), 500);
+        }
+        
+        function selectShot(type) {
+            shotType = type;
+            document.getElementById('shotType').textContent = type.toUpperCase() + ' SHOT';
             
-            if (direction === 'next') {
-                index = (index + 1) % types.length;
-            } else {
-                index = (index - 1 + types.length) % types.length;
+            // Update button states
+            document.querySelectorAll('.shot-button').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(type + 'Btn').classList.add('active');
+            
+            triggerHaptic('light');
+        }
+        
+        function setDifficulty(level) {
+            difficulty = level;
+            
+            // Update goalie based on difficulty
+            switch(level) {
+                case 'easy':
+                    goalie.speed = 0.05;
+                    goalie.prediction = 0.5;
+                    break;
+                case 'medium':
+                    goalie.speed = 0.1;
+                    goalie.prediction = 0.7;
+                    break;
+                case 'hard':
+                    goalie.speed = 0.15;
+                    goalie.prediction = 0.9;
+                    break;
             }
             
-            shotType = types[index];
-            document.getElementById('shotType').textContent = 
-                shotType.toUpperCase() + ' SHOT';
+            // Update button states
+            document.querySelectorAll('.difficulty-button').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+        }
+        
+        function togglePause() {
+            if (!gameActive) return;
+            
+            gamePaused = !gamePaused;
+            document.getElementById('pauseBtn').textContent = gamePaused ? '▶' : '⏸';
+            
+            if (gamePaused) {
+                document.getElementById('settingsPanel').style.display = 'block';
+            } else {
+                document.getElementById('settingsPanel').style.display = 'none';
+            }
+        }
+        
+        function resumeGame() {
+            gamePaused = false;
+            document.getElementById('pauseBtn').textContent = '⏸';
+            document.getElementById('settingsPanel').style.display = 'none';
+        }
+        
+        function toggleSound() {
+            soundEnabled = !soundEnabled;
+            document.getElementById('soundToggle').textContent = soundEnabled ? 'ON' : 'OFF';
+            document.getElementById('soundToggle').classList.toggle('active');
+        }
+        
+        function toggleHaptic() {
+            hapticEnabled = !hapticEnabled;
+            document.getElementById('hapticToggle').textContent = hapticEnabled ? 'ON' : 'OFF';
+            document.getElementById('hapticToggle').classList.toggle('active');
+        }
+        
+        function togglePerformance() {
+            performanceMode = performanceMode === 'high' ? 'low' : 'high';
+            document.getElementById('performanceToggle').textContent = performanceMode.toUpperCase();
+            document.getElementById('performanceToggle').classList.toggle('active');
+        }
+        
+        function playSound(soundName) {
+            if (!soundEnabled) return;
+            
+            const sound = sounds[soundName];
+            if (sound) {
+                sound.currentTime = 0;
+                sound.play().catch(() => {}); // Ignore errors
+            }
+        }
+        
+        function triggerHaptic(type = 'light') {
+            if (!hapticEnabled || !window.navigator.vibrate) return;
+            
+            switch(type) {
+                case 'light':
+                    window.navigator.vibrate(10);
+                    break;
+                case 'medium':
+                    window.navigator.vibrate(25);
+                    break;
+                case 'heavy':
+                    window.navigator.vibrate([50, 50, 50]);
+                    break;
+            }
         }
         
         function startCharge() {
-            if (!gameActive || isCharging) return;
+            if (!gameActive || isCharging || gamePaused) return;
             isCharging = true;
             shotPower = 0;
             chargeStartTime = Date.now();
+            
+            // Update aim assist
+            aimAssist = document.getElementById('aimSlider').value / 100;
+            sensitivity = document.getElementById('sensitivitySlider').value / 100;
         }
         
         function updateAim(e) {
@@ -388,32 +764,63 @@
                 mouseY = e.clientY;
             }
             
-            // Calculate stick angle based on mouse position
+            // Apply sensitivity
             const centerX = canvas.width / 2;
             const centerY = canvas.height - 100;
-            stickAngle = Math.atan2(mouseY - centerY, mouseX - centerX) * 180 / Math.PI;
-            document.getElementById('stickAngle').textContent = 
-                `ANGLE: ${Math.round(stickAngle)}°`;
+            const deltaX = (mouseX - centerX) * sensitivity;
+            const deltaY = (mouseY - centerY) * sensitivity;
+            
+            stickAngle = Math.atan2(deltaY, deltaX) * 180 / Math.PI;
             
             // Update goalie prediction
             if (gameActive && !isCharging) {
-                const aimX = (mouseX - canvas.width / 2) / canvas.width * 200;
-                const aimY = (mouseY - canvas.height / 2) / canvas.height * 100;
-                goalie.targetX = aimX * 0.7; // Goalie anticipates but not perfectly
+                const aimX = deltaX / canvas.width * 200;
+                const aimY = deltaY / canvas.height * 100;
+                goalie.targetX = aimX * goalie.prediction;
                 goalie.targetY = Math.max(-50, Math.min(20, aimY * 0.5));
+            }
+            
+            // Show aim trajectory
+            if (isCharging && aimAssist > 0) {
+                updateAimIndicator();
+            }
+        }
+        
+        function updateAimIndicator() {
+            const indicator = document.getElementById('aimIndicator');
+            indicator.innerHTML = '';
+            
+            // Calculate trajectory
+            const steps = 5;
+            for (let i = 1; i <= steps; i++) {
+                const dot = document.createElement('div');
+                dot.className = 'aim-dot';
+                
+                const t = i / steps;
+                const x = canvas.width / 2 + (mouseX - canvas.width / 2) * t * aimAssist;
+                const y = (canvas.height - 100) + (mouseY - (canvas.height - 100)) * t * aimAssist;
+                
+                dot.style.left = x + 'px';
+                dot.style.top = y + 'px';
+                dot.style.opacity = 0.3 * (1 - t);
+                
+                indicator.appendChild(dot);
             }
         }
         
         function shoot() {
-            if (!gameActive || !isCharging) return;
+            if (!gameActive || !isCharging || gamePaused) return;
             
             isCharging = false;
             shots++;
+            stats.totalShots++;
             updateUI();
+            
+            // Clear aim indicator
+            document.getElementById('aimIndicator').innerHTML = '';
             
             // Calculate shot properties based on type
             let velocity, accuracy, elevation;
-            const chargeTime = Date.now() - chargeStartTime;
             
             switch(shotType) {
                 case 'slap':
@@ -432,38 +839,59 @@
                     elevation = 0.05 + Math.random() * 0.25;
             }
             
-            // Create puck with 3D properties
-            const aimX = (mouseX - canvas.width / 2) / canvas.width;
-            const aimY = (canvas.height / 2 - mouseY) / canvas.height;
+            // Apply aim assist
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height - 100;
+            const rawAimX = (mouseX - centerX) / canvas.width;
+            const rawAimY = (canvas.height / 2 - mouseY) / canvas.height;
+            
+            // Slightly pull aim towards center of net when aim assist is on
+            const aimX = rawAimX * (1 - aimAssist * 0.3);
+            const aimY = rawAimY * (1 - aimAssist * 0.3);
             
             const puck = {
                 x: 0,
                 y: 0,
                 z: 0,
-                vx: aimX * velocity * accuracy + (Math.random() - 0.5) * (1 - accuracy) * 10,
+                vx: aimX * velocity * accuracy * sensitivity + (Math.random() - 0.5) * (1 - accuracy) * 10,
                 vy: -elevation * velocity * 0.5,
                 vz: velocity,
                 size: 8,
                 rotation: 0,
                 rotationSpeed: Math.random() * 0.3 + 0.1,
+                spin: (Math.random() - 0.5) * 0.2,
                 trail: []
             };
             
             pucks.push(puck);
             
-            // Create ice spray particles
-            for (let i = 0; i < 20; i++) {
-                particles.push({
-                    x: 0,
-                    y: 0,
-                    z: 0,
-                    vx: (Math.random() - 0.5) * 5,
-                    vy: -Math.random() * 3,
-                    vz: Math.random() * 2,
-                    life: 1,
-                    size: Math.random() * 3 + 1
-                });
+            // Ice spray particles
+            if (performanceMode === 'high') {
+                for (let i = 0; i < 20; i++) {
+                    particles.push({
+                        x: 0,
+                        y: 0,
+                        z: 0,
+                        vx: (Math.random() - 0.5) * 5,
+                        vy: -Math.random() * 3,
+                        vz: Math.random() * 2,
+                        life: 1,
+                        size: Math.random() * 3 + 1
+                    });
+                }
             }
+            
+            // Ice mark where shot was taken
+            iceMarks.push({
+                x: 0,
+                y: 0,
+                z: 0,
+                opacity: 1,
+                size: 20
+            });
+            
+            playSound('shot');
+            triggerHaptic('medium');
             
             shotPower = 0;
             document.getElementById('powerFill').style.width = '0%';
@@ -481,14 +909,30 @@
         function startGame(mode) {
             gameMode = mode;
             gameActive = true;
+            gamePaused = false;
             score = 0;
             shots = 0;
             saves = 0;
             pucks = [];
             particles = [];
             rebounds = [];
+            iceMarks = [];
+            
+            if (mode === 'classic') {
+                shotsLeft = 5;
+            } else if (mode === 'timeattack') {
+                timeLeft = 60;
+            }
+            
+            // Hide practice mode goalie
+            if (mode === 'practice') {
+                goalie.x = 1000; // Move goalie off screen
+            } else {
+                goalie.x = 0;
+            }
             
             document.getElementById('startScreen').style.display = 'none';
+            document.getElementById('pauseBtn').style.display = 'block';
             updateUI();
             gameLoop();
         }
@@ -503,13 +947,15 @@
         }
         
         function updateGoalie() {
+            if (gameMode === 'practice') return;
+            
             // Physics-based movement
             const dx = goalie.targetX - goalie.x;
             const dy = goalie.targetY - goalie.y;
             
-            goalie.vx += dx * 0.1;
-            goalie.vy += dy * 0.1;
-            goalie.vx *= 0.9; // Friction
+            goalie.vx += dx * goalie.speed;
+            goalie.vy += dy * goalie.speed;
+            goalie.vx *= 0.9;
             goalie.vy *= 0.9;
             
             goalie.x += goalie.vx;
@@ -526,7 +972,7 @@
                 const puck = pucks[i];
                 
                 // Update trail
-                if (puck.z < NET_DISTANCE) {
+                if (puck.z < NET_DISTANCE && performanceMode === 'high') {
                     puck.trail.push({ x: puck.x, y: puck.y, z: puck.z });
                     if (puck.trail.length > 15) {
                         puck.trail.shift();
@@ -537,6 +983,9 @@
                 puck.x += puck.vx;
                 puck.y += puck.vy;
                 puck.z += puck.vz;
+                
+                // Add spin effect
+                puck.vx += puck.spin;
                 
                 // Gravity
                 puck.vy += 0.3;
@@ -560,7 +1009,8 @@
                     // Check goalie collision
                     const goalieWidth = 60;
                     const goalieHeight = 80;
-                    const hitGoalie = Math.abs(puck.x - goalie.x) < goalieWidth / 2 &&
+                    const hitGoalie = gameMode !== 'practice' &&
+                                    Math.abs(puck.x - goalie.x) < goalieWidth / 2 &&
                                     Math.abs(puck.y - goalie.y) < goalieHeight / 2;
                     
                     if (hitGoalie) {
@@ -602,6 +1052,8 @@
             saves++;
             goalie.saveAnimation = 1;
             showAnnouncement('SAVE!');
+            playSound('save');
+            triggerHaptic('heavy');
             
             // Create rebound
             const rebound = {
@@ -622,11 +1074,19 @@
             
             pucks.splice(index, 1);
             updateUI();
+            
+            // Check game over
+            if (gameMode === 'sudden' && saves > 0) {
+                endGame();
+            }
         }
         
         function handleGoal(puck, index) {
             score += 100;
+            stats.totalGoals++;
             showAnnouncement('GOAL!!!');
+            playSound('goal');
+            triggerHaptic('heavy');
             
             // Bonus for location
             if (puck.y < -40) {
@@ -637,19 +1097,24 @@
                 setTimeout(() => showAnnouncement('FIVE HOLE!'), 500);
             }
             
+            // Check achievements
+            checkAchievements();
+            
             // Goal celebration particles
-            for (let i = 0; i < 50; i++) {
-                particles.push({
-                    x: puck.x,
-                    y: puck.y,
-                    z: NET_DISTANCE,
-                    vx: (Math.random() - 0.5) * 20,
-                    vy: (Math.random() - 0.5) * 20,
-                    vz: (Math.random() - 0.5) * 10,
-                    life: 1,
-                    size: Math.random() * 5 + 2,
-                    color: `hsl(${Math.random() * 360}, 100%, 50%)`
-                });
+            if (performanceMode === 'high') {
+                for (let i = 0; i < 50; i++) {
+                    particles.push({
+                        x: puck.x,
+                        y: puck.y,
+                        z: NET_DISTANCE,
+                        vx: (Math.random() - 0.5) * 20,
+                        vy: (Math.random() - 0.5) * 20,
+                        vz: (Math.random() - 0.5) * 10,
+                        life: 1,
+                        size: Math.random() * 5 + 2,
+                        color: `hsl(${Math.random() * 360}, 100%, 50%)`
+                    });
+                }
             }
             
             pucks.splice(index, 1);
@@ -658,22 +1123,26 @@
         
         function handlePost(puck, index) {
             showAnnouncement('POST!');
+            playSound('post');
+            triggerHaptic('medium');
+            
             puck.vx *= -0.8;
             puck.vz *= 0.5;
             
-            // Post sound effect would go here
-            for (let i = 0; i < 10; i++) {
-                particles.push({
-                    x: puck.x,
-                    y: puck.y,
-                    z: puck.z,
-                    vx: (Math.random() - 0.5) * 10,
-                    vy: -Math.random() * 5,
-                    vz: -Math.random() * 5,
-                    life: 0.5,
-                    size: 2,
-                    color: '#ff0000'
-                });
+            if (performanceMode === 'high') {
+                for (let i = 0; i < 10; i++) {
+                    particles.push({
+                        x: puck.x,
+                        y: puck.y,
+                        z: puck.z,
+                        vx: (Math.random() - 0.5) * 10,
+                        vy: -Math.random() * 5,
+                        vz: -Math.random() * 5,
+                        life: 0.5,
+                        size: 2,
+                        color: '#ff0000'
+                    });
+                }
             }
         }
         
@@ -681,6 +1150,38 @@
             showAnnouncement('MISS!');
             pucks.splice(index, 1);
             updateUI();
+        }
+        
+        function checkAchievements() {
+            // Hat Trick
+            if (score >= 300 && !stats.achievements.includes('hatTrick')) {
+                stats.achievements.push('hatTrick');
+                showAchievement('HAT TRICK!');
+            }
+            
+            // Sharpshooter
+            if (shots > 0 && (score / shots) >= 200 && shots >= 5 && !stats.achievements.includes('sharpshooter')) {
+                stats.achievements.push('sharpshooter');
+                showAchievement('SHARPSHOOTER!');
+            }
+            
+            // Perfect Game
+            if (gameMode === 'classic' && shots === 5 && saves === 0 && !stats.achievements.includes('perfect')) {
+                stats.achievements.push('perfect');
+                showAchievement('PERFECT GAME!');
+            }
+        }
+        
+        function showAchievement(text) {
+            const popup = document.getElementById('achievementPopup');
+            popup.textContent = '🏆 ' + text;
+            popup.classList.add('show');
+            
+            setTimeout(() => {
+                popup.classList.remove('show');
+            }, 3000);
+            
+            saveStats();
         }
         
         function updateParticles() {
@@ -698,6 +1199,17 @@
             }
         }
         
+        function updateIceMarks() {
+            for (let i = iceMarks.length - 1; i >= 0; i--) {
+                const mark = iceMarks[i];
+                mark.opacity -= 0.005;
+                
+                if (mark.opacity <= 0) {
+                    iceMarks.splice(i, 1);
+                }
+            }
+        }
+        
         function showAnnouncement(text) {
             const announcement = document.getElementById('announcement');
             announcement.textContent = text;
@@ -711,11 +1223,18 @@
             document.getElementById('score').textContent = score;
             document.getElementById('shots').textContent = shots;
             document.getElementById('saves').textContent = saves;
+            
+            // Update stats display
+            const statsText = `Best: ${stats.bestScore} | Goals: ${stats.totalGoals}`;
+            document.getElementById('statsDisplay').textContent = statsText;
         }
         
         function drawRink() {
-            // Ice surface with perspective
-            ctx.fillStyle = '#e6f2ff';
+            // Ice surface with gradient
+            const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+            gradient.addColorStop(0, '#e6f2ff');
+            gradient.addColorStop(1, '#d0e4f7');
+            ctx.fillStyle = gradient;
             ctx.fillRect(0, 0, canvas.width, canvas.height);
             
             // Ice texture
@@ -724,6 +1243,15 @@
                 const y = canvas.height * (i / 20);
                 ctx.fillRect(0, y, canvas.width, 2);
             }
+            
+            // Draw ice marks
+            iceMarks.forEach(mark => {
+                const pos = project3D(mark.x, 0, mark.z);
+                ctx.fillStyle = `rgba(180, 200, 220, ${mark.opacity * 0.3})`;
+                ctx.beginPath();
+                ctx.ellipse(pos.x, pos.y, mark.size * pos.scale, mark.size * 0.3 * pos.scale, 0, 0, Math.PI * 2);
+                ctx.fill();
+            });
             
             // Draw rink lines with perspective
             ctx.strokeStyle = '#ff0000';
@@ -783,8 +1311,13 @@
                 ctx.stroke();
             }
             
-            // Posts
-            ctx.fillStyle = '#ff0000';
+            // Posts with lighting effect
+            const gradient = ctx.createLinearGradient(0, topLeft.y, 0, bottomLeft.y);
+            gradient.addColorStop(0, '#ff6666');
+            gradient.addColorStop(0.5, '#ff0000');
+            gradient.addColorStop(1, '#cc0000');
+            
+            ctx.fillStyle = gradient;
             ctx.strokeStyle = '#aa0000';
             ctx.lineWidth = 4;
             
@@ -812,6 +1345,8 @@
         }
         
         function drawGoalie() {
+            if (gameMode === 'practice') return;
+            
             const pos = project3D(goalie.x, goalie.y, goalie.z);
             const size = 80 * pos.scale;
             
@@ -821,14 +1356,16 @@
             ctx.ellipse(pos.x, pos.y + size/2, size * 0.8, size * 0.2, 0, 0, Math.PI * 2);
             ctx.fill();
             
-            // Goalie body based on stance
+            // Goalie body based on stance with smooth transitions
             ctx.save();
             ctx.translate(pos.x, pos.y);
+            
+            const animOffset = Math.sin(Date.now() * 0.002) * 2;
             
             if (goalie.stance === 'butterfly') {
                 // Butterfly save position
                 ctx.fillStyle = '#000080';
-                ctx.fillRect(-size*0.8, -size*0.2, size*1.6, size*0.6);
+                ctx.fillRect(-size*0.8, -size*0.2 + animOffset, size*1.6, size*0.6);
                 
                 // Pads
                 ctx.fillStyle = '#ffffff';
@@ -837,7 +1374,7 @@
             } else {
                 // Standing position
                 ctx.fillStyle = '#000080';
-                ctx.fillRect(-size*0.4, -size*0.6, size*0.8, size*1.2);
+                ctx.fillRect(-size*0.4, -size*0.6 + animOffset, size*0.8, size*1.2);
                 
                 // Pads
                 ctx.fillStyle = '#ffffff';
@@ -849,25 +1386,25 @@
             const gloveOffset = goalie.stance === 'glove' ? -size*0.3 : 0;
             ctx.fillStyle = '#8B4513';
             ctx.beginPath();
-            ctx.arc(-size*0.5, -size*0.2 + gloveOffset, size*0.2, 0, Math.PI * 2);
+            ctx.arc(-size*0.5, -size*0.2 + gloveOffset + animOffset, size*0.2, 0, Math.PI * 2);
             ctx.fill();
             
             // Blocker
             const blockerOffset = goalie.stance === 'blocker' ? -size*0.3 : 0;
             ctx.fillStyle = '#8B4513';
-            ctx.fillRect(size*0.3, -size*0.3 + blockerOffset, size*0.25, size*0.4);
+            ctx.fillRect(size*0.3, -size*0.3 + blockerOffset + animOffset, size*0.25, size*0.4);
             
             // Mask
             ctx.fillStyle = '#ffffff';
-            ctx.fillRect(-size*0.2, -size*0.8, size*0.4, size*0.3);
+            ctx.fillRect(-size*0.2, -size*0.8 + animOffset, size*0.4, size*0.3);
             
             // Mask cage
             ctx.strokeStyle = '#000000';
             ctx.lineWidth = 2;
             for (let i = 0; i < 4; i++) {
                 ctx.beginPath();
-                ctx.moveTo(-size*0.2 + i*size*0.13, -size*0.8);
-                ctx.lineTo(-size*0.2 + i*size*0.13, -size*0.5);
+                ctx.moveTo(-size*0.2 + i*size*0.13, -size*0.8 + animOffset);
+                ctx.lineTo(-size*0.2 + i*size*0.13, -size*0.5 + animOffset);
                 ctx.stroke();
             }
             
@@ -887,7 +1424,7 @@
             const size = puck.size * pos.scale;
             
             // Draw trail
-            if (puck.trail.length > 1) {
+            if (puck.trail.length > 1 && performanceMode === 'high') {
                 ctx.strokeStyle = 'rgba(0, 0, 0, 0.3)';
                 ctx.lineWidth = size * 0.5;
                 ctx.beginPath();
@@ -927,6 +1464,16 @@
             ctx.beginPath();
             ctx.arc(0, 0, size * 0.7, 0, Math.PI * 2);
             ctx.stroke();
+            
+            // Show spin effect
+            if (Math.abs(puck.spin) > 0.1) {
+                ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                ctx.moveTo(-size, 0);
+                ctx.lineTo(size, 0);
+                ctx.stroke();
+            }
             
             ctx.restore();
         }
@@ -976,50 +1523,120 @@
             }
         }
         
+        function drawTimer() {
+            if (gameMode === 'timeattack') {
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+                ctx.fillRect(canvas.width / 2 - 60, 30, 120, 40);
+                
+                ctx.fillStyle = timeLeft < 10 ? '#ff0000' : '#ffffff';
+                ctx.font = 'bold 24px Bebas Neue';
+                ctx.textAlign = 'center';
+                ctx.fillText(Math.ceil(timeLeft) + 's', canvas.width / 2, 58);
+            } else if (gameMode === 'classic') {
+                const remaining = 5 - shots;
+                if (remaining >= 0) {
+                    ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+                    ctx.fillRect(canvas.width / 2 - 80, 30, 160, 40);
+                    
+                    ctx.fillStyle = remaining <= 1 ? '#ff0000' : '#ffffff';
+                    ctx.font = 'bold 24px Bebas Neue';
+                    ctx.textAlign = 'center';
+                    ctx.fillText(remaining + ' SHOTS LEFT', canvas.width / 2, 58);
+                }
+            }
+        }
+        
         function gameLoop() {
             if (!gameActive) return;
             
-            // Clear canvas
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            
-            // Update game objects
-            updateGoalie();
-            updatePucks();
-            updateParticles();
-            
-            // Update charge power
-            if (isCharging) {
-                shotPower = Math.min(shotPower + 0.015, 1);
-                document.getElementById('powerFill').style.width = (shotPower * 100) + '%';
+            if (!gamePaused) {
+                // Clear canvas
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                // Update game objects
+                updateGoalie();
+                updatePucks();
+                updateParticles();
+                updateIceMarks();
+                
+                // Update charge power
+                if (isCharging) {
+                    shotPower = Math.min(shotPower + 0.015, 1);
+                    document.getElementById('powerFill').style.width = (shotPower * 100) + '%';
+                }
+                
+                // Update timer
+                if (gameMode === 'timeattack') {
+                    timeLeft -= 1/60;
+                    if (timeLeft <= 0) {
+                        endGame();
+                        return;
+                    }
+                }
+                
+                // Check classic mode end
+                if (gameMode === 'classic' && shots >= 5 && pucks.length === 0) {
+                    endGame();
+                    return;
+                }
+                
+                // Draw everything in proper order
+                drawRink();
+                drawNet();
+                
+                // Draw rebounds
+                rebounds.forEach(rebound => drawRebound(rebound));
+                
+                // Draw particles behind objects
+                if (performanceMode === 'high') {
+                    drawParticles();
+                }
+                
+                // Draw goalie
+                drawGoalie();
+                
+                // Draw pucks
+                pucks.forEach(puck => drawPuck(puck));
+                
+                // Draw stick
+                drawStick();
+                
+                // Draw timer
+                drawTimer();
             }
             
-            // Draw everything in proper order
-            drawRink();
-            drawNet();
-            
-            // Draw rebounds
-            rebounds.forEach(rebound => drawRebound(rebound));
-            
-            // Draw particles behind objects
-            drawParticles();
-            
-            // Draw goalie
-            drawGoalie();
-            
-            // Draw pucks
-            pucks.forEach(puck => drawPuck(puck));
-            
-            // Draw stick
-            drawStick();
-            
             requestAnimationFrame(gameLoop);
+        }
+        
+        function endGame() {
+            gameActive = false;
+            
+            // Update best score
+            if (score > stats.bestScore) {
+                stats.bestScore = score;
+                showAchievement('NEW HIGH SCORE!');
+            }
+            
+            saveStats();
+            
+            showAnnouncement('GAME OVER!');
+            setTimeout(() => {
+                const accuracy = shots > 0 ? Math.round(((shots - saves) / shots) * 100) : 0;
+                alert(`Final Score: ${score}\nAccuracy: ${accuracy}%\nGoals: ${shots - saves}/${shots}`);
+                document.getElementById('startScreen').style.display = 'flex';
+                document.getElementById('pauseBtn').style.display = 'none';
+            }, 2000);
         }
         
         function updateUI() {
             document.getElementById('score').textContent = score;
             document.getElementById('shots').textContent = shots;
             document.getElementById('saves').textContent = saves;
+            
+            // Update stats display
+            const statsText = `Best: ${stats.bestScore} | Goals: ${stats.totalGoals}`;
+            document.getElementById('statsDisplay').textContent = statsText;
         }
-    </script>
-</body>
-</html>
+        
+        // Initialize
+        updateUI();

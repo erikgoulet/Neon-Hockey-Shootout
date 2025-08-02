@@ -283,7 +283,46 @@
             100% { opacity: 0; transform: translate(-50%, -50%) scale(1); }
         }
         
-        @media (max-width: 768px) {
+        .crosshair {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            border: 2px solid #0ff;
+            border-radius: 50%;
+            opacity: 0.5;
+            pointer-events: none;
+            transform: translate(-50%, -50%);
+            transition: all 0.1s;
+            display: none;
+            z-index: 15;
+        }
+        
+        .crosshair::before,
+        .crosshair::after {
+            content: '';
+            position: absolute;
+            background: #0ff;
+        }
+        
+        .crosshair::before {
+            width: 2px;
+            height: 20px;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+        }
+        
+        .crosshair::after {
+            width: 20px;
+            height: 2px;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+        }
+        
+        .crosshair.show {
+            display: block;
+        }
             .score-item {
                 font-size: 18px;
                 padding: 8px 15px;
@@ -346,6 +385,8 @@
         <button class="shot-button" id="backhandBtn">BACKHAND</button>
     </div>
     
+    <div class="crosshair" id="crosshair"></div>
+    
     <div id="startScreen">
         <h1>HOCKEY SHOOTOUT</h1>
         <div class="difficulty-label">SELECT DIFFICULTY</div>
@@ -397,7 +438,8 @@
             stance: 'ready',
             saveAnimation: 0,
             speed: 0.1,
-            prediction: 0.7
+            prediction: 0.7,
+            stanceTimer: 0
         };
         
         let particles = [];
@@ -533,12 +575,22 @@
                 mouseY = e.clientY;
             }
             
+            // Update crosshair position
+            const crosshair = document.getElementById('crosshair');
+            if (gameActive) {
+                crosshair.classList.add('show');
+                crosshair.style.left = mouseX + 'px';
+                crosshair.style.top = mouseY + 'px';
+            } else {
+                crosshair.classList.remove('show');
+            }
+            
             // Update goalie prediction
             if (gameActive && !isCharging) {
-                const aimX = (mouseX - canvas.width / 2) / canvas.width * 200;
-                const aimY = (mouseY - canvas.height / 2) / canvas.height * 100;
+                const aimX = (mouseX - canvas.width / 2) / canvas.width * 300; // Increased range for bigger goal
+                const aimY = (mouseY - canvas.height / 2) / canvas.height * 150;
                 goalie.targetX = aimX * goalie.prediction;
-                goalie.targetY = Math.max(-50, Math.min(20, aimY * 0.5));
+                goalie.targetY = Math.max(-75, Math.min(30, aimY * 0.5)); // Adjusted for bigger goal
             }
         }
         
@@ -618,6 +670,7 @@
             } else {
                 goalie.stance = 'blocker';
             }
+            goalie.stanceTimer = 0; // Reset timer when new shot is taken
         }
         
         function startGame(mode) {
@@ -665,6 +718,7 @@
             
             // Reset UI
             document.getElementById('powerFill').style.width = '0%';
+            document.getElementById('crosshair').classList.remove('show');
             updateUI();
             
             // Show start screen, hide home button
@@ -709,6 +763,19 @@
             if (goalie.saveAnimation > 0) {
                 goalie.saveAnimation -= 0.05;
             }
+            
+            // Return to ready stance after shot
+            if (goalie.stanceTimer > 0) {
+                goalie.stanceTimer--;
+                if (goalie.stanceTimer === 0) {
+                    goalie.stance = 'ready';
+                }
+            }
+            
+            // If no pucks in play and goalie is not ready, start timer to stand up
+            if (pucks.length === 0 && goalie.stance !== 'ready' && goalie.stanceTimer === 0) {
+                goalie.stanceTimer = 30; // Stand up after 0.5 seconds
+            }
         }
         
         function updatePucks() {
@@ -740,16 +807,16 @@
                 
                 // Check for goal, save, or miss
                 if (puck.z >= NET_DISTANCE) {
-                    const netWidth = 200;
-                    const netHeight = 100;
-                    const netTop = -60;
+                    const netWidth = 300;  // Increased from 200
+                    const netHeight = 150; // Increased from 100
+                    const netTop = -90;    // Adjusted from -60
                     
                     const inNet = Math.abs(puck.x) < netWidth / 2 && 
                                  puck.y > netTop && puck.y < netTop + netHeight;
                     
                     // Check goalie collision
-                    const goalieWidth = 60;
-                    const goalieHeight = 80;
+                    const goalieWidth = 90;   // Increased from 60
+                    const goalieHeight = 120; // Increased from 80
                     const hitGoalie = gameMode !== 'practice' &&
                                     Math.abs(puck.x - goalie.x) < goalieWidth / 2 &&
                                     Math.abs(puck.y - goalie.y) < goalieHeight / 2;
@@ -835,10 +902,10 @@
             }
             
             // Bonus for location
-            if (puck.y < -40) {
+            if (puck.y < -60) {  // Adjusted for bigger goal
                 score += 50;
                 setTimeout(() => showAnnouncement('TOP SHELF!'), 500);
-            } else if (puck.y > 20) {
+            } else if (puck.y > 30) {  // Adjusted for bigger goal
                 score += 30;
                 setTimeout(() => showAnnouncement('FIVE HOLE!'), 500);
             }
@@ -961,10 +1028,10 @@
         }
         
         function drawNet() {
-            const netWidth = 200;
-            const netHeight = 100;
-            const netDepth = 60;
-            const netTop = -60;
+            const netWidth = 300;  // Increased from 200
+            const netHeight = 150; // Increased from 100
+            const netDepth = 80;   // Increased from 60
+            const netTop = -90;    // Adjusted from -60
             
             // Net back
             ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
@@ -1028,7 +1095,7 @@
             if (gameMode === 'practice') return;
             
             const pos = project3D(goalie.x, goalie.y, goalie.z);
-            const size = 80 * pos.scale;
+            const size = 120 * pos.scale;  // Increased from 80
             
             // Shadow
             ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';

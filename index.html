@@ -4,6 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>NEON SLAPSHOT - Realistic Hockey FPS</title>
+    
+    <!-- Mobile Optimizations -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="theme-color" content="#000000">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>🏒</text></svg>">
+    
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap');
         
@@ -426,7 +434,7 @@
             
             // Create puck with 3D properties
             const aimX = (mouseX - canvas.width / 2) / canvas.width;
-            const aimY = (mouseY - canvas.height / 2) / canvas.height;
+            const aimY = (canvas.height / 2 - mouseY) / canvas.height;
             
             const puck = {
                 x: 0,
@@ -531,7 +539,7 @@
                 puck.z += puck.vz;
                 
                 // Gravity
-                puck.vy += 0.5;
+                puck.vy += 0.3;
                 
                 // Ice friction
                 puck.vx *= 0.99;

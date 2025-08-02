@@ -1,121 +1,194 @@
-# Neon Hockey Shootout
+# Neon Hockey Shootout 🏒
 
-A realistic first-person hockey shooting game with 3D physics, adaptive AI goalie, and full mobile optimization including sound effects and haptic feedback.
+A realistic first-person hockey shooting game with 3D physics and adaptive AI goalie. Test your shooting skills in this immersive hockey experience!
 
-## 🏒 Play Now
+## 🎮 Play Now
 **[Play Neon Hockey Shootout](https://erikgoulet.github.io/Neon-Hockey-Shootout/)**
 
-## 🎮 New Features (v2.0)
-- **Sound Effects**: Shot sounds, goal horn, save effects, and post hits
-- **Haptic Feedback**: Feel every shot, save, and goal on mobile devices
-- **Fixed Controls**: Dedicated shot type buttons - no more accidental switches
-- **Aim Assist**: Optional trajectory preview with adjustable intensity
-- **Pause Menu**: In-game settings and adjustments
-- **Practice Mode**: Train without a goalie
-- **Difficulty Levels**: Easy, Medium, and Hard AI settings
-- **Achievement System**: Unlock Hat Trick, Sharpshooter, and Perfect Game
-- **Stats Tracking**: Persistent best scores and career goals
-- **Performance Mode**: Toggle between high/low quality for older devices
-- **Visual Improvements**: Ice marks, enhanced lighting, spin effects
+## 📖 How to Play
 
-## 📱 Controls
-### Desktop
+### Basic Gameplay
+1. **Aim** - Move your mouse/finger to aim where you want to shoot
+2. **Charge** - Hold down mouse/touch to charge your shot power
+3. **Release** - Let go to shoot the puck
+4. **Score** - Get the puck past the goalie and into the net!
+
+### Controls
+
+#### Desktop 🖱️
+- **Mouse Movement**: Aim your shot
 - **Click and Hold**: Charge shot power
-- **Move Mouse**: Aim your shot
-- **Release**: Shoot the puck
-- **Number Keys 1-3**: Change shot type
+- **Release Click**: Shoot the puck
 
-### Mobile
+#### Mobile 📱
+- **Touch and Drag**: Aim your shot
 - **Touch and Hold**: Charge shot power
-- **Move Finger**: Aim your shot
-- **Release**: Shoot the puck
+- **Release Touch**: Shoot the puck
 - **Bottom Buttons**: Select shot type (Wrist/Slap/Backhand)
 
 ## 🎯 Game Modes
+
 ### Classic Mode
-- 5 shots to get the highest score
+- **5 shots** to get the highest score possible
 - Perfect for quick practice sessions
+- Try to beat your high score!
 
-### Time Attack
-- 60 seconds to score as many goals as possible
-- Fast-paced action mode
+### Time Attack ⏱️
+- **60 seconds** to score as many goals as possible
+- Fast-paced, continuous action
+- No shot limit - keep shooting!
 
-### Sudden Death
-- Game ends on the first save
+### Sudden Death 💀
+- Game ends on the **first save**
 - Ultimate pressure mode
+- Every shot counts!
 
-### Practice Mode (NEW)
-- No goalie - perfect your aim
+### Practice Mode 🎪
+- **No goalie** - perfect your aim
 - Great for learning shot mechanics
+- Practice different shot types and angles
+
+## 🏒 Shot Types
+
+### Wrist Shot
+- **Accuracy**: High (90%)
+- **Power**: Moderate
+- **Best for**: Precise corner shots
+- **Strategy**: Use when you need reliable accuracy
+
+### Slap Shot
+- **Accuracy**: Low (70%)
+- **Power**: Maximum
+- **Best for**: Power plays
+- **Strategy**: Charge fully and aim center-mass
+
+### Backhand
+- **Accuracy**: Very High (85%)
+- **Power**: Low
+- **Best for**: Deceptive angles
+- **Strategy**: Surprise the goalie with unusual trajectories
+
+## 🎚️ Difficulty Levels
+
+### Easy 🟢
+- **Goalie Speed**: Slow
+- **Prediction**: 50% accuracy
+- **Best for**: Beginners
+
+### Medium 🟡
+- **Goalie Speed**: Moderate
+- **Prediction**: 70% accuracy
+- **Best for**: Regular players
+
+### Hard 🔴
+- **Goalie Speed**: Fast
+- **Prediction**: 90% accuracy
+- **Best for**: Expert players
 
 ## 🏆 Scoring System
-- **Base Goal**: 100 points
+
+### Base Points
+- **Goal**: 100 points
 - **Top Shelf Bonus**: +50 points (high corner shots)
-- **Five Hole Bonus**: +30 points (between goalie's pads)
-- **Combo Multiplier**: Consecutive goals increase score
-- **Post Hit**: No points but spectacular!
+- **Five Hole Bonus**: +30 points (between goalie's legs)
 
-## 🎖️ Achievements
-- **Hat Trick**: Score 3 goals in one game
-- **Sharpshooter**: Maintain high accuracy over 5+ shots
-- **Perfect Game**: Complete classic mode with no saves
+### Special Shots
+- **Post Hit**: No points but shows "POST!"
+- **Save**: Goalie blocks your shot
+- **Miss**: Shot goes wide of the net
 
-## ⚙️ Settings
-- **Sound**: Toggle game audio on/off
-- **Haptic**: Enable/disable vibration feedback
-- **Aim Assist**: Adjust trajectory preview (0-100%)
-- **Sensitivity**: Control aim responsiveness (50-150%)
-- **Performance**: High/Low quality mode
+## 🎮 Game Mechanics
+
+### Shot Power System
+- **Charging**: Hold to increase power (0-100%)
+- **Visual Indicator**: Power bar fills from green → yellow → red
+- **Trade-off**: More power = less accuracy
+
+### Goalie AI
+- **Adaptive Movement**: Goalie predicts your aim
+- **Multiple Stances**: 
+  - Standing (normal saves)
+  - Butterfly (low shots)
+  - Glove save (high shots)
+  - Blocker save (mid-level shots)
+- **Difficulty Scaling**: AI gets smarter on harder difficulties
+
+### Physics Engine
+- **Puck Movement**: Realistic trajectory with gravity
+- **Ice Friction**: Puck slows naturally
+- **Rebounds**: Pucks bounce off goalie realistically
+- **3D Perspective**: True depth perception
 
 ## 💡 Pro Tips
-- Different shot types work better in different situations:
-  - **Wrist Shot**: Best accuracy, moderate power
-  - **Slap Shot**: Maximum power, lower accuracy
-  - **Backhand**: Deceptive angle, good for surprises
-- Watch the goalie's positioning to find openings
-- Use power wisely - more power means less accuracy
-- Aim for the corners for maximum points
-- In Practice Mode, work on your top shelf accuracy
 
-## 📲 Add to Home Screen
-For the best experience on mobile devices, add this game to your home screen:
+### Aiming Strategy
+1. **Watch the goalie** - They move to predict your shot
+2. **Aim for corners** - Harder for goalie to reach
+3. **Mix up shot types** - Keep the goalie guessing
+4. **Use less power** - Sometimes accuracy beats power
 
-### iOS (iPhone/iPad)
-1. Open in Safari
-2. Tap the Share button
-3. Select "Add to Home Screen"
+### Scoring Tips
+- **Top Shelf**: Aim high in the corners for bonus points
+- **Five Hole**: Shoot low between the pads when goalie is standing
+- **Deke**: Move your aim quickly before shooting to fool the goalie
+- **Patience**: Don't always shoot at full power
 
-### Android
-1. Open in Chrome
-2. Tap the menu (three dots)
-3. Select "Add to Home Screen"
+### Advanced Techniques
+- **Quick Release**: Tap for minimal charge on wrist shots
+- **Power Slapper**: Full charge + slap shot for maximum velocity
+- **Backhand Surprise**: Use rarely to catch goalie off-guard
+- **Rebound Awareness**: Watch for pucks bouncing back
 
-## 💻 Technologies
-- Pure HTML5 Canvas for rendering
-- Vanilla JavaScript for game logic
-- CSS3 for UI animations
-- Web Audio API for sound effects
-- Vibration API for haptic feedback
-- LocalStorage for stats persistence
-- Mobile-first responsive design
-- 3D perspective projection
-- Physics-based puck movement
+## 📱 Mobile Features
 
-## 🔧 Browser Support
-- Chrome (recommended)
-- Safari (iOS 13+)
-- Firefox
-- Edge
-- Mobile browsers with haptic support
+### Optimizations
+- **Touch Controls**: Designed for one-finger play
+- **Haptic Feedback**: Feel the shots (vibration)
+- **Responsive Design**: Adapts to any screen size
+- **Portrait/Landscape**: Works in both orientations
+
+### Add to Home Screen
+**iOS**: Safari → Share → Add to Home Screen  
+**Android**: Chrome → Menu → Add to Home Screen
+
+## 🔧 Technical Details
+
+### Technologies Used
+- **HTML5 Canvas**: Game rendering
+- **Vanilla JavaScript**: Game logic (no frameworks)
+- **CSS3**: UI animations and styling
+- **Web Vibration API**: Haptic feedback
+- **3D Projection**: Custom perspective engine
+
+### Performance
+- **60 FPS** target framerate
+- **Optimized** for mobile devices
+- **No external dependencies**
+- **Lightweight**: < 100KB total
+
+## 🐛 Troubleshooting
+
+### Game Won't Start
+- Refresh the page
+- Check internet connection
+- Try a different browser
+
+### Controls Not Working
+- **Mobile**: Ensure you're touching the game area
+- **Desktop**: Click on the game first to focus
+
+### Slow Performance
+- Close other browser tabs
+- Restart your device
+- Try Chrome browser for best performance
 
 ## 📈 Version History
+
 ### v2.0 (Current)
-- Added sound effects and haptic feedback
-- Fixed control scheme with dedicated buttons
-- Added pause menu and settings
-- Implemented achievement system
-- Added practice mode
-- Performance optimizations
+- Fixed control scheme with dedicated shot buttons
+- Added haptic feedback for mobile
+- Improved difficulty settings
+- Better visual feedback
 
 ### v1.0
 - Initial release
@@ -123,6 +196,18 @@ For the best experience on mobile devices, add this game to your home screen:
 - 3 game modes
 - Mobile support
 
+## 🎯 Future Updates
+- Sound effects and music
+- Online leaderboards
+- More shot types
+- Multiplayer mode
+- Tournament system
+
+## 👨‍💻 Developer
+
+Created by Erik Goulet  
+[Report Issues](https://github.com/erikgoulet/Neon-Hockey-Shootout/issues)
+
 ---
 
-Made with ❤️ for hockey fans | [Report Issues](https://github.com/erikgoulet/Neon-Hockey-Shootout/issues)
+**Enjoy the game! 🏒**

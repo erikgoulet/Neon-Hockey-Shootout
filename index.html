@@ -1,0 +1,1017 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>NEON SLAPSHOT - Realistic Hockey FPS</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        body {
+            font-family: 'Bebas Neue', sans-serif;
+            background: #000;
+            color: #fff;
+            overflow: hidden;
+            touch-action: none;
+            position: relative;
+        }
+        
+        #gameCanvas {
+            display: block;
+            cursor: crosshair;
+        }
+        
+        .ui-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 20px;
+            pointer-events: none;
+            z-index: 5;
+        }
+        
+        .score-display {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            font-size: 24px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+        }
+        
+        .score-item {
+            background: rgba(0, 0, 0, 0.7);
+            padding: 10px 20px;
+            border-radius: 5px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .power-meter {
+            position: absolute;
+            bottom: 150px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 300px;
+            height: 20px;
+            border: 2px solid #fff;
+            background: rgba(0, 0, 0, 0.5);
+            overflow: hidden;
+            border-radius: 10px;
+        }
+        
+        .power-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(to right, #00ff00, #ffff00, #ff0000);
+            transition: width 0.1s;
+        }
+        
+        .shot-type {
+            position: absolute;
+            bottom: 180px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 18px;
+            color: #fff;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+            background: rgba(0, 0, 0, 0.7);
+            padding: 5px 15px;
+            border-radius: 5px;
+        }
+        
+        .controls {
+            position: absolute;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
+            font-size: 16px;
+            color: #ccc;
+            text-shadow: 1px 1px 2px #000;
+        }
+        
+        .announcement {
+            position: absolute;
+            top: 30%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 72px;
+            font-weight: bold;
+            color: #ff0000;
+            text-shadow: 4px 4px 8px rgba(0,0,0,0.8);
+            opacity: 0;
+            pointer-events: none;
+            z-index: 20;
+            letter-spacing: 4px;
+        }
+        
+        .announcement.show {
+            animation: announce 1.5s ease-out;
+        }
+        
+        @keyframes announce {
+            0% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
+            50% { opacity: 1; transform: translate(-50%, -50%) scale(1.2); }
+            100% { opacity: 0; transform: translate(-50%, -50%) scale(1); }
+        }
+        
+        #startScreen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(180deg, #1a1a2e, #0f0f1e);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+        }
+        
+        #startScreen h1 {
+            font-size: 84px;
+            color: #fff;
+            text-shadow: 6px 6px 12px rgba(0,0,0,0.8);
+            margin-bottom: 20px;
+            letter-spacing: 6px;
+        }
+        
+        .start-button {
+            background: #ff0000;
+            border: none;
+            color: #fff;
+            padding: 20px 40px;
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 24px;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin: 10px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+        
+        .start-button:hover {
+            background: #ff3333;
+            transform: scale(1.05);
+            box-shadow: 0 8px 20px rgba(255,0,0,0.4);
+        }
+        
+        .mode-select {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 30px;
+        }
+        
+        .stick-indicator {
+            position: absolute;
+            bottom: 10px;
+            right: 20px;
+            font-size: 14px;
+            color: #888;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 5px 10px;
+            border-radius: 5px;
+        }
+        
+        .rebound-alert {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 36px;
+            color: #ffff00;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+            opacity: 0;
+            pointer-events: none;
+        }
+        
+        .rebound-alert.show {
+            animation: reboundPulse 1s ease-out;
+        }
+        
+        @keyframes reboundPulse {
+            0% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
+            50% { opacity: 1; transform: translate(-50%, -50%) scale(1.1); }
+            100% { opacity: 0; transform: translate(-50%, -50%) scale(1); }
+        }
+        
+        @media (max-width: 768px) {
+            .score-item {
+                font-size: 18px;
+                padding: 8px 15px;
+            }
+            
+            #startScreen h1 {
+                font-size: 48px;
+            }
+            
+            .start-button {
+                font-size: 20px;
+                padding: 15px 30px;
+            }
+            
+            .announcement {
+                font-size: 48px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <canvas id="gameCanvas"></canvas>
+    
+    <div class="ui-overlay">
+        <div class="score-display">
+            <div class="score-item">SCORE: <span id="score">0</span></div>
+            <div class="score-item">SHOTS: <span id="shots">0</span></div>
+            <div class="score-item">SAVES: <span id="saves">0</span></div>
+        </div>
+    </div>
+    
+    <div class="announcement" id="announcement"></div>
+    <div class="rebound-alert" id="reboundAlert">REBOUND!</div>
+    
+    <div class="shot-type" id="shotType">WRIST SHOT</div>
+    <div class="power-meter">
+        <div class="power-fill" id="powerFill"></div>
+    </div>
+    
+    <div class="controls">
+        HOLD TO CHARGE • SWIPE TO CHANGE SHOT TYPE • RELEASE TO SHOOT
+    </div>
+    
+    <div class="stick-indicator" id="stickAngle">ANGLE: 0°</div>
+    
+    <div id="startScreen">
+        <h1>HOCKEY SHOOTOUT</h1>
+        <div class="mode-select">
+            <button class="start-button" onclick="startGame('classic')">CLASSIC MODE</button>
+            <button class="start-button" onclick="startGame('timeattack')">TIME ATTACK</button>
+            <button class="start-button" onclick="startGame('sudden')">SUDDEN DEATH</button>
+        </div>
+    </div>
+    
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        // Game state
+        let gameMode = 'classic';
+        let gameActive = false;
+        let score = 0;
+        let shots = 0;
+        let saves = 0;
+        let shotPower = 0;
+        let isCharging = false;
+        let mouseX = 0;
+        let mouseY = 0;
+        let stickAngle = 0;
+        let shotType = 'wrist'; // wrist, slap, backhand
+        let chargeStartTime = 0;
+        
+        // 3D perspective constants
+        const PERSPECTIVE = 800;
+        const RINK_DEPTH = 600;
+        const NET_DISTANCE = 400;
+        
+        // Game objects
+        let pucks = [];
+        let goalie = {
+            x: 0,
+            y: 0,
+            z: NET_DISTANCE,
+            targetX: 0,
+            targetY: -20,
+            vx: 0,
+            vy: 0,
+            stance: 'ready', // ready, butterfly, glove, blocker
+            saveAnimation: 0
+        };
+        
+        let particles = [];
+        let rebounds = [];
+        
+        // Canvas setup
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+        
+        // Input handling
+        let touchStartX = 0;
+        let touchStartY = 0;
+        
+        canvas.addEventListener('mousedown', startCharge);
+        canvas.addEventListener('mouseup', shoot);
+        canvas.addEventListener('mousemove', updateAim);
+        
+        canvas.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            const touch = e.touches[0];
+            touchStartX = touch.clientX;
+            touchStartY = touch.clientY;
+            mouseX = touch.clientX;
+            mouseY = touch.clientY;
+            startCharge();
+        });
+        
+        canvas.addEventListener('touchend', (e) => {
+            e.preventDefault();
+            shoot();
+        });
+        
+        canvas.addEventListener('touchmove', (e) => {
+            e.preventDefault();
+            const touch = e.touches[0];
+            mouseX = touch.clientX;
+            mouseY = touch.clientY;
+            
+            // Detect swipe for shot type change
+            const swipeX = touch.clientX - touchStartX;
+            if (Math.abs(swipeX) > 50) {
+                if (swipeX > 0) {
+                    changeShotType('next');
+                } else {
+                    changeShotType('prev');
+                }
+                touchStartX = touch.clientX;
+            }
+            
+            updateAim();
+        });
+        
+        function changeShotType(direction) {
+            const types = ['wrist', 'slap', 'backhand'];
+            let index = types.indexOf(shotType);
+            
+            if (direction === 'next') {
+                index = (index + 1) % types.length;
+            } else {
+                index = (index - 1 + types.length) % types.length;
+            }
+            
+            shotType = types[index];
+            document.getElementById('shotType').textContent = 
+                shotType.toUpperCase() + ' SHOT';
+        }
+        
+        function startCharge() {
+            if (!gameActive || isCharging) return;
+            isCharging = true;
+            shotPower = 0;
+            chargeStartTime = Date.now();
+        }
+        
+        function updateAim(e) {
+            if (e) {
+                mouseX = e.clientX;
+                mouseY = e.clientY;
+            }
+            
+            // Calculate stick angle based on mouse position
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height - 100;
+            stickAngle = Math.atan2(mouseY - centerY, mouseX - centerX) * 180 / Math.PI;
+            document.getElementById('stickAngle').textContent = 
+                `ANGLE: ${Math.round(stickAngle)}°`;
+            
+            // Update goalie prediction
+            if (gameActive && !isCharging) {
+                const aimX = (mouseX - canvas.width / 2) / canvas.width * 200;
+                const aimY = (mouseY - canvas.height / 2) / canvas.height * 100;
+                goalie.targetX = aimX * 0.7; // Goalie anticipates but not perfectly
+                goalie.targetY = Math.max(-50, Math.min(20, aimY * 0.5));
+            }
+        }
+        
+        function shoot() {
+            if (!gameActive || !isCharging) return;
+            
+            isCharging = false;
+            shots++;
+            updateUI();
+            
+            // Calculate shot properties based on type
+            let velocity, accuracy, elevation;
+            const chargeTime = Date.now() - chargeStartTime;
+            
+            switch(shotType) {
+                case 'slap':
+                    velocity = 25 + shotPower * 20;
+                    accuracy = 0.7 - shotPower * 0.2;
+                    elevation = 0.1 + Math.random() * 0.2;
+                    break;
+                case 'backhand':
+                    velocity = 15 + shotPower * 10;
+                    accuracy = 0.85;
+                    elevation = 0.05 + Math.random() * 0.15;
+                    break;
+                default: // wrist shot
+                    velocity = 20 + shotPower * 15;
+                    accuracy = 0.9 - shotPower * 0.1;
+                    elevation = 0.05 + Math.random() * 0.25;
+            }
+            
+            // Create puck with 3D properties
+            const aimX = (mouseX - canvas.width / 2) / canvas.width;
+            const aimY = (mouseY - canvas.height / 2) / canvas.height;
+            
+            const puck = {
+                x: 0,
+                y: 0,
+                z: 0,
+                vx: aimX * velocity * accuracy + (Math.random() - 0.5) * (1 - accuracy) * 10,
+                vy: -elevation * velocity * 0.5,
+                vz: velocity,
+                size: 8,
+                rotation: 0,
+                rotationSpeed: Math.random() * 0.3 + 0.1,
+                trail: []
+            };
+            
+            pucks.push(puck);
+            
+            // Create ice spray particles
+            for (let i = 0; i < 20; i++) {
+                particles.push({
+                    x: 0,
+                    y: 0,
+                    z: 0,
+                    vx: (Math.random() - 0.5) * 5,
+                    vy: -Math.random() * 3,
+                    vz: Math.random() * 2,
+                    life: 1,
+                    size: Math.random() * 3 + 1
+                });
+            }
+            
+            shotPower = 0;
+            document.getElementById('powerFill').style.width = '0%';
+            
+            // Update goalie stance based on shot
+            if (puck.vy < -10) {
+                goalie.stance = 'glove';
+            } else if (puck.vy > -5) {
+                goalie.stance = 'butterfly';
+            } else {
+                goalie.stance = 'blocker';
+            }
+        }
+        
+        function startGame(mode) {
+            gameMode = mode;
+            gameActive = true;
+            score = 0;
+            shots = 0;
+            saves = 0;
+            pucks = [];
+            particles = [];
+            rebounds = [];
+            
+            document.getElementById('startScreen').style.display = 'none';
+            updateUI();
+            gameLoop();
+        }
+        
+        function project3D(x, y, z) {
+            const scale = PERSPECTIVE / (PERSPECTIVE + z);
+            return {
+                x: canvas.width / 2 + x * scale,
+                y: canvas.height / 2 + y * scale,
+                scale: scale
+            };
+        }
+        
+        function updateGoalie() {
+            // Physics-based movement
+            const dx = goalie.targetX - goalie.x;
+            const dy = goalie.targetY - goalie.y;
+            
+            goalie.vx += dx * 0.1;
+            goalie.vy += dy * 0.1;
+            goalie.vx *= 0.9; // Friction
+            goalie.vy *= 0.9;
+            
+            goalie.x += goalie.vx;
+            goalie.y += goalie.vy;
+            
+            // Update save animation
+            if (goalie.saveAnimation > 0) {
+                goalie.saveAnimation -= 0.05;
+            }
+        }
+        
+        function updatePucks() {
+            for (let i = pucks.length - 1; i >= 0; i--) {
+                const puck = pucks[i];
+                
+                // Update trail
+                if (puck.z < NET_DISTANCE) {
+                    puck.trail.push({ x: puck.x, y: puck.y, z: puck.z });
+                    if (puck.trail.length > 15) {
+                        puck.trail.shift();
+                    }
+                }
+                
+                // Physics update
+                puck.x += puck.vx;
+                puck.y += puck.vy;
+                puck.z += puck.vz;
+                
+                // Gravity
+                puck.vy += 0.5;
+                
+                // Ice friction
+                puck.vx *= 0.99;
+                puck.vz *= 0.99;
+                
+                // Rotation
+                puck.rotation += puck.rotationSpeed;
+                
+                // Check for goal, save, or miss
+                if (puck.z >= NET_DISTANCE) {
+                    const netWidth = 200;
+                    const netHeight = 100;
+                    const netTop = -60;
+                    
+                    const inNet = Math.abs(puck.x) < netWidth / 2 && 
+                                 puck.y > netTop && puck.y < netTop + netHeight;
+                    
+                    // Check goalie collision
+                    const goalieWidth = 60;
+                    const goalieHeight = 80;
+                    const hitGoalie = Math.abs(puck.x - goalie.x) < goalieWidth / 2 &&
+                                    Math.abs(puck.y - goalie.y) < goalieHeight / 2;
+                    
+                    if (hitGoalie) {
+                        handleSave(puck, i);
+                    } else if (inNet) {
+                        handleGoal(puck, i);
+                    } else {
+                        // Hit post or miss
+                        if (Math.abs(puck.x) < netWidth / 2 + 10 && 
+                            puck.y > netTop - 10 && puck.y < netTop + netHeight + 10) {
+                            handlePost(puck, i);
+                        } else {
+                            handleMiss(puck, i);
+                        }
+                    }
+                }
+                
+                // Remove if too far
+                if (puck.z > NET_DISTANCE + 200 || puck.y > 200) {
+                    pucks.splice(i, 1);
+                }
+            }
+            
+            // Update rebounds
+            for (let i = rebounds.length - 1; i >= 0; i--) {
+                const rebound = rebounds[i];
+                rebound.x += rebound.vx;
+                rebound.y += rebound.vy;
+                rebound.z += rebound.vz;
+                rebound.vy += 0.5;
+                
+                if (rebound.y > 100 || rebound.z > NET_DISTANCE + 100) {
+                    rebounds.splice(i, 1);
+                }
+            }
+        }
+        
+        function handleSave(puck, index) {
+            saves++;
+            goalie.saveAnimation = 1;
+            showAnnouncement('SAVE!');
+            
+            // Create rebound
+            const rebound = {
+                x: puck.x,
+                y: puck.y,
+                z: puck.z,
+                vx: -puck.vx * 0.5 + (Math.random() - 0.5) * 10,
+                vy: -5,
+                vz: -puck.vz * 0.3,
+                size: puck.size
+            };
+            rebounds.push(rebound);
+            
+            document.getElementById('reboundAlert').classList.add('show');
+            setTimeout(() => {
+                document.getElementById('reboundAlert').classList.remove('show');
+            }, 1000);
+            
+            pucks.splice(index, 1);
+            updateUI();
+        }
+        
+        function handleGoal(puck, index) {
+            score += 100;
+            showAnnouncement('GOAL!!!');
+            
+            // Bonus for location
+            if (puck.y < -40) {
+                score += 50;
+                setTimeout(() => showAnnouncement('TOP SHELF!'), 500);
+            } else if (puck.y > 20) {
+                score += 30;
+                setTimeout(() => showAnnouncement('FIVE HOLE!'), 500);
+            }
+            
+            // Goal celebration particles
+            for (let i = 0; i < 50; i++) {
+                particles.push({
+                    x: puck.x,
+                    y: puck.y,
+                    z: NET_DISTANCE,
+                    vx: (Math.random() - 0.5) * 20,
+                    vy: (Math.random() - 0.5) * 20,
+                    vz: (Math.random() - 0.5) * 10,
+                    life: 1,
+                    size: Math.random() * 5 + 2,
+                    color: `hsl(${Math.random() * 360}, 100%, 50%)`
+                });
+            }
+            
+            pucks.splice(index, 1);
+            updateUI();
+        }
+        
+        function handlePost(puck, index) {
+            showAnnouncement('POST!');
+            puck.vx *= -0.8;
+            puck.vz *= 0.5;
+            
+            // Post sound effect would go here
+            for (let i = 0; i < 10; i++) {
+                particles.push({
+                    x: puck.x,
+                    y: puck.y,
+                    z: puck.z,
+                    vx: (Math.random() - 0.5) * 10,
+                    vy: -Math.random() * 5,
+                    vz: -Math.random() * 5,
+                    life: 0.5,
+                    size: 2,
+                    color: '#ff0000'
+                });
+            }
+        }
+        
+        function handleMiss(puck, index) {
+            showAnnouncement('MISS!');
+            pucks.splice(index, 1);
+            updateUI();
+        }
+        
+        function updateParticles() {
+            for (let i = particles.length - 1; i >= 0; i--) {
+                const p = particles[i];
+                p.x += p.vx;
+                p.y += p.vy;
+                p.z += p.vz;
+                p.vy += 0.3;
+                p.life -= 0.02;
+                
+                if (p.life <= 0) {
+                    particles.splice(i, 1);
+                }
+            }
+        }
+        
+        function showAnnouncement(text) {
+            const announcement = document.getElementById('announcement');
+            announcement.textContent = text;
+            announcement.classList.add('show');
+            setTimeout(() => {
+                announcement.classList.remove('show');
+            }, 1500);
+        }
+        
+        function updateUI() {
+            document.getElementById('score').textContent = score;
+            document.getElementById('shots').textContent = shots;
+            document.getElementById('saves').textContent = saves;
+        }
+        
+        function drawRink() {
+            // Ice surface with perspective
+            ctx.fillStyle = '#e6f2ff';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Ice texture
+            ctx.fillStyle = 'rgba(200, 220, 240, 0.3)';
+            for (let i = 0; i < 20; i++) {
+                const y = canvas.height * (i / 20);
+                ctx.fillRect(0, y, canvas.width, 2);
+            }
+            
+            // Draw rink lines with perspective
+            ctx.strokeStyle = '#ff0000';
+            ctx.lineWidth = 4;
+            
+            // Goal line
+            const goalLineNear = project3D(-200, 0, NET_DISTANCE - 50);
+            const goalLineFar = project3D(200, 0, NET_DISTANCE - 50);
+            ctx.beginPath();
+            ctx.moveTo(goalLineNear.x, goalLineNear.y);
+            ctx.lineTo(goalLineFar.x, goalLineNear.y);
+            ctx.stroke();
+            
+            // Blue line
+            const blueLineNear = project3D(-300, 0, 200);
+            const blueLineFar = project3D(300, 0, 200);
+            ctx.strokeStyle = '#0000ff';
+            ctx.beginPath();
+            ctx.moveTo(blueLineNear.x, blueLineNear.y);
+            ctx.lineTo(blueLineFar.x, blueLineNear.y);
+            ctx.stroke();
+        }
+        
+        function drawNet() {
+            const netWidth = 200;
+            const netHeight = 100;
+            const netDepth = 60;
+            const netTop = -60;
+            
+            // Net back
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+            const topLeft = project3D(-netWidth/2, netTop, NET_DISTANCE + netDepth);
+            const topRight = project3D(netWidth/2, netTop, NET_DISTANCE + netDepth);
+            const bottomLeft = project3D(-netWidth/2, netTop + netHeight, NET_DISTANCE + netDepth);
+            const bottomRight = project3D(netWidth/2, netTop + netHeight, NET_DISTANCE + netDepth);
+            
+            ctx.beginPath();
+            ctx.moveTo(topLeft.x, topLeft.y);
+            ctx.lineTo(topRight.x, topRight.y);
+            ctx.lineTo(bottomRight.x, bottomRight.y);
+            ctx.lineTo(bottomLeft.x, bottomLeft.y);
+            ctx.closePath();
+            ctx.fill();
+            
+            // Net mesh
+            ctx.strokeStyle = 'rgba(200, 200, 200, 0.5)';
+            ctx.lineWidth = 1;
+            
+            // Vertical lines
+            for (let i = 0; i <= 20; i++) {
+                const x = -netWidth/2 + (i * netWidth/20);
+                const top = project3D(x, netTop, NET_DISTANCE + netDepth);
+                const bottom = project3D(x, netTop + netHeight, NET_DISTANCE + netDepth);
+                ctx.beginPath();
+                ctx.moveTo(top.x, top.y);
+                ctx.lineTo(bottom.x, bottom.y);
+                ctx.stroke();
+            }
+            
+            // Posts
+            ctx.fillStyle = '#ff0000';
+            ctx.strokeStyle = '#aa0000';
+            ctx.lineWidth = 4;
+            
+            // Left post
+            const leftPostTop = project3D(-netWidth/2, netTop, NET_DISTANCE);
+            const leftPostBottom = project3D(-netWidth/2, netTop + netHeight, NET_DISTANCE);
+            ctx.beginPath();
+            ctx.moveTo(leftPostTop.x, leftPostTop.y);
+            ctx.lineTo(leftPostBottom.x, leftPostBottom.y);
+            ctx.stroke();
+            
+            // Right post
+            const rightPostTop = project3D(netWidth/2, netTop, NET_DISTANCE);
+            const rightPostBottom = project3D(netWidth/2, netTop + netHeight, NET_DISTANCE);
+            ctx.beginPath();
+            ctx.moveTo(rightPostTop.x, rightPostTop.y);
+            ctx.lineTo(rightPostBottom.x, rightPostBottom.y);
+            ctx.stroke();
+            
+            // Crossbar
+            ctx.beginPath();
+            ctx.moveTo(leftPostTop.x, leftPostTop.y);
+            ctx.lineTo(rightPostTop.x, rightPostTop.y);
+            ctx.stroke();
+        }
+        
+        function drawGoalie() {
+            const pos = project3D(goalie.x, goalie.y, goalie.z);
+            const size = 80 * pos.scale;
+            
+            // Shadow
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
+            ctx.beginPath();
+            ctx.ellipse(pos.x, pos.y + size/2, size * 0.8, size * 0.2, 0, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Goalie body based on stance
+            ctx.save();
+            ctx.translate(pos.x, pos.y);
+            
+            if (goalie.stance === 'butterfly') {
+                // Butterfly save position
+                ctx.fillStyle = '#000080';
+                ctx.fillRect(-size*0.8, -size*0.2, size*1.6, size*0.6);
+                
+                // Pads
+                ctx.fillStyle = '#ffffff';
+                ctx.fillRect(-size*0.8, -size*0.1, size*0.7, size*0.5);
+                ctx.fillRect(size*0.1, -size*0.1, size*0.7, size*0.5);
+            } else {
+                // Standing position
+                ctx.fillStyle = '#000080';
+                ctx.fillRect(-size*0.4, -size*0.6, size*0.8, size*1.2);
+                
+                // Pads
+                ctx.fillStyle = '#ffffff';
+                ctx.fillRect(-size*0.35, 0, size*0.3, size*0.6);
+                ctx.fillRect(size*0.05, 0, size*0.3, size*0.6);
+            }
+            
+            // Glove
+            const gloveOffset = goalie.stance === 'glove' ? -size*0.3 : 0;
+            ctx.fillStyle = '#8B4513';
+            ctx.beginPath();
+            ctx.arc(-size*0.5, -size*0.2 + gloveOffset, size*0.2, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Blocker
+            const blockerOffset = goalie.stance === 'blocker' ? -size*0.3 : 0;
+            ctx.fillStyle = '#8B4513';
+            ctx.fillRect(size*0.3, -size*0.3 + blockerOffset, size*0.25, size*0.4);
+            
+            // Mask
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(-size*0.2, -size*0.8, size*0.4, size*0.3);
+            
+            // Mask cage
+            ctx.strokeStyle = '#000000';
+            ctx.lineWidth = 2;
+            for (let i = 0; i < 4; i++) {
+                ctx.beginPath();
+                ctx.moveTo(-size*0.2 + i*size*0.13, -size*0.8);
+                ctx.lineTo(-size*0.2 + i*size*0.13, -size*0.5);
+                ctx.stroke();
+            }
+            
+            ctx.restore();
+            
+            // Save animation flash
+            if (goalie.saveAnimation > 0) {
+                ctx.fillStyle = `rgba(255, 255, 0, ${goalie.saveAnimation * 0.5})`;
+                ctx.beginPath();
+                ctx.arc(pos.x, pos.y, size * 1.5 * goalie.saveAnimation, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+        
+        function drawPuck(puck) {
+            const pos = project3D(puck.x, puck.y, puck.z);
+            const size = puck.size * pos.scale;
+            
+            // Draw trail
+            if (puck.trail.length > 1) {
+                ctx.strokeStyle = 'rgba(0, 0, 0, 0.3)';
+                ctx.lineWidth = size * 0.5;
+                ctx.beginPath();
+                for (let i = 0; i < puck.trail.length; i++) {
+                    const trailPos = project3D(puck.trail[i].x, puck.trail[i].y, puck.trail[i].z);
+                    if (i === 0) {
+                        ctx.moveTo(trailPos.x, trailPos.y);
+                    } else {
+                        ctx.lineTo(trailPos.x, trailPos.y);
+                    }
+                }
+                ctx.stroke();
+            }
+            
+            // Puck shadow
+            const shadowY = 0;
+            const shadowPos = project3D(puck.x, shadowY, puck.z);
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
+            ctx.beginPath();
+            ctx.ellipse(shadowPos.x, shadowPos.y, size * 1.5, size * 0.5, 0, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Draw puck
+            ctx.save();
+            ctx.translate(pos.x, pos.y);
+            ctx.rotate(puck.rotation);
+            
+            // Puck body
+            ctx.fillStyle = '#000000';
+            ctx.beginPath();
+            ctx.arc(0, 0, size, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Puck detail
+            ctx.strokeStyle = '#333333';
+            ctx.lineWidth = size * 0.2;
+            ctx.beginPath();
+            ctx.arc(0, 0, size * 0.7, 0, Math.PI * 2);
+            ctx.stroke();
+            
+            ctx.restore();
+        }
+        
+        function drawRebound(rebound) {
+            const pos = project3D(rebound.x, rebound.y, rebound.z);
+            const size = rebound.size * pos.scale;
+            
+            ctx.fillStyle = '#000000';
+            ctx.beginPath();
+            ctx.arc(pos.x, pos.y, size, 0, Math.PI * 2);
+            ctx.fill();
+        }
+        
+        function drawParticles() {
+            particles.forEach(p => {
+                const pos = project3D(p.x, p.y, p.z);
+                const size = p.size * pos.scale * p.life;
+                
+                ctx.fillStyle = p.color || `rgba(255, 255, 255, ${p.life})`;
+                ctx.beginPath();
+                ctx.arc(pos.x, pos.y, size, 0, Math.PI * 2);
+                ctx.fill();
+            });
+        }
+        
+        function drawStick() {
+            if (!isCharging && pucks.length === 0) {
+                const stickX = canvas.width / 2 + Math.cos(stickAngle * Math.PI / 180) * 100;
+                const stickY = canvas.height - 100 + Math.sin(stickAngle * Math.PI / 180) * 100;
+                
+                // Stick shaft
+                ctx.strokeStyle = '#8B4513';
+                ctx.lineWidth = 8;
+                ctx.beginPath();
+                ctx.moveTo(canvas.width / 2, canvas.height - 100);
+                ctx.lineTo(stickX, stickY);
+                ctx.stroke();
+                
+                // Blade
+                ctx.fillStyle = '#000000';
+                ctx.save();
+                ctx.translate(stickX, stickY);
+                ctx.rotate((stickAngle + 90) * Math.PI / 180);
+                ctx.fillRect(-5, 0, 10, 30);
+                ctx.restore();
+            }
+        }
+        
+        function gameLoop() {
+            if (!gameActive) return;
+            
+            // Clear canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Update game objects
+            updateGoalie();
+            updatePucks();
+            updateParticles();
+            
+            // Update charge power
+            if (isCharging) {
+                shotPower = Math.min(shotPower + 0.015, 1);
+                document.getElementById('powerFill').style.width = (shotPower * 100) + '%';
+            }
+            
+            // Draw everything in proper order
+            drawRink();
+            drawNet();
+            
+            // Draw rebounds
+            rebounds.forEach(rebound => drawRebound(rebound));
+            
+            // Draw particles behind objects
+            drawParticles();
+            
+            // Draw goalie
+            drawGoalie();
+            
+            // Draw pucks
+            pucks.forEach(puck => drawPuck(puck));
+            
+            // Draw stick
+            drawStick();
+            
+            requestAnimationFrame(gameLoop);
+        }
+        
+        function updateUI() {
+            document.getElementById('score').textContent = score;
+            document.getElementById('shots').textContent = shots;
+            document.getElementById('saves').textContent = saves;
+        }
+    </script>
+</body>
+</html>

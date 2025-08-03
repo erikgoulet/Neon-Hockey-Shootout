@@ -260,10 +260,35 @@
             animation: announce 1.5s ease-out;
         }
         
+        .announcement.goal {
+            font-size: 32px;
+            color: #ffff00;
+            text-shadow: 4px 4px 0 #ff0000, -2px -2px 0 #fff;
+            animation: goalAnnounce 2s ease-out;
+        }
+        
         @keyframes announce {
             0% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
             50% { opacity: 1; transform: translate(-50%, -50%) scale(1.2); }
             100% { opacity: 0; transform: translate(-50%, -50%) scale(1); }
+        }
+        
+        @keyframes goalAnnounce {
+            0% { 
+                opacity: 0; 
+                transform: translate(-50%, -50%) scale(0.3) rotate(-10deg); 
+            }
+            40% { 
+                opacity: 1; 
+                transform: translate(-50%, -50%) scale(1.3) rotate(5deg); 
+            }
+            60% { 
+                transform: translate(-50%, -50%) scale(1.1) rotate(-2deg); 
+            }
+            100% { 
+                opacity: 0; 
+                transform: translate(-50%, -50%) scale(1) rotate(0deg); 
+            }
         }
         
         #startScreen {
@@ -542,7 +567,7 @@
     <div class="shot-type" id="shotType">WRIST SHOT</div>
     
     <div class="controls">
-        HOLD TO CHARGE • RELEASE TO SHOOT
+        SWIPE TO SHOOT • DISTANCE = POWER
     </div>
     
     <div class="shot-selector">
@@ -619,6 +644,28 @@
         // Check for haptic support once
         const canVibrate = 'vibrate' in navigator;
         
+        // Sound system foundation
+        const sounds = {
+            enabled: true,
+            volume: 0.5,
+            // Sound data URLs can be added here later
+            // Example: shot: 'data:audio/wav;base64,...'
+        };
+        
+        function playSound(soundName, volume = 1.0) {
+            if (!sounds.enabled || !sounds[soundName]) return;
+            
+            try {
+                const audio = new Audio(sounds[soundName]);
+                audio.volume = sounds.volume * volume;
+                audio.play().catch(() => {
+                    // Ignore audio play errors (common on mobile)
+                });
+            } catch (e) {
+                // Ignore audio errors
+            }
+        }
+        
         // Game state
         let gameMode = 'classic';
         let gameActive = false;
@@ -636,14 +683,26 @@
         let deltaTime = 0;
         let animationFrame = 0;
         
+        // Swipe controls
+        let touchStartX = 0;
+        let touchStartY = 0;
+        let touchStartTime = 0;
+        let isSwiping = false;
+        let swipePreview = null;
+        
+        // Screen shake
+        let screenShake = 0;
+        let screenShakeX = 0;
+        let screenShakeY = 0;
+        
         // 3D perspective constants adjusted for portrait
         const PERSPECTIVE = 600;
         const NET_DISTANCE = 300;
         const NET_Y_OFFSET = -100;
         
-        // Object pools
+        // Object pools - reduced for mobile performance
         const particlePool = [];
-        const MAX_PARTICLES = 150;
+        const MAX_PARTICLES = 50;
         
         // Initialize particle pool
         for (let i = 0; i < MAX_PARTICLES; i++) {
@@ -719,10 +778,15 @@
         window.addEventListener('resize', resizeCanvas);
         resizeCanvas();
         
-        // Event listeners
-        canvas.addEventListener('pointerdown', startCharge);
-        canvas.addEventListener('pointerup', shoot);
-        canvas.addEventListener('pointermove', updateAim);
+        // Event listeners - Mobile-first swipe controls
+        canvas.addEventListener('touchstart', handleTouchStart, { passive: false });
+        canvas.addEventListener('touchmove', handleTouchMove, { passive: false });
+        canvas.addEventListener('touchend', handleTouchEnd, { passive: false });
+        
+        // Mouse fallback for desktop
+        canvas.addEventListener('mousedown', handleMouseDown);
+        canvas.addEventListener('mousemove', handleMouseMove);
+        canvas.addEventListener('mouseup', handleMouseUp);
         
         // Button event listeners
         document.getElementById('wristBtn').addEventListener('click', () => selectShot('wrist'));
@@ -772,18 +836,107 @@
             document.getElementById(level + 'Btn').classList.add('active');
         }
         
-        function startCharge(e) {
-            if (!gameActive || isCharging) return;
-            isCharging = true;
-            shotPower = 0;
-            player.shooting = true;
-            player.shootTimer = 0;
+        // Touch control functions
+        function handleTouchStart(e) {
+            if (!gameActive || isSwiping) return;
+            e.preventDefault();
+            
+            const touch = e.touches[0];
+            touchStartX = touch.clientX;
+            touchStartY = touch.clientY;
+            touchStartTime = Date.now();
+            isSwiping = true;
+            
+            // Initialize swipe preview
+            swipePreview = {
+                startX: touchStartX,
+                startY: touchStartY,
+                currentX: touchStartX,
+                currentY: touchStartY,
+                power: 0
+            };
+            
+            if (canVibrate) navigator.vibrate(10);
         }
         
-        function updateAim(e) {
+        function handleTouchMove(e) {
+            if (!gameActive || !isSwiping) return;
+            e.preventDefault();
+            
+            const touch = e.touches[0];
+            const currentX = touch.clientX;
+            const currentY = touch.clientY;
+            
+            // Update swipe preview
+            swipePreview.currentX = currentX;
+            swipePreview.currentY = currentY;
+            
+            // Calculate swipe distance for power
+            const dx = currentX - touchStartX;
+            const dy = currentY - touchStartY;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+            swipePreview.power = Math.min(distance / 200, 1);
+            
+            // Update power meter
+            powerFillEl.style.height = (swipePreview.power * 100) + '%';
+            powerMeterContainerEl.style.display = 'block';
+        }
+        
+        function handleTouchEnd(e) {
+            if (!gameActive || !isSwiping) return;
+            e.preventDefault();
+            
+            const swipeTime = Date.now() - touchStartTime;
+            const dx = swipePreview.currentX - touchStartX;
+            const dy = swipePreview.currentY - touchStartY;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+            
+            // Minimum swipe distance to register as shot
+            if (distance > 30) {
+                const swipeSpeed = distance / swipeTime;
+                shootWithSwipe(dx, dy, distance, swipeSpeed);
+            }
+            
+            isSwiping = false;
+            swipePreview = null;
+            powerFillEl.style.height = '0%';
+        }
+        
+        // Mouse control functions (fallback for desktop)
+        function handleMouseDown(e) {
+            if (!gameActive) return;
+            touchStartX = e.clientX;
+            touchStartY = e.clientY;
+            touchStartTime = Date.now();
+            isSwiping = true;
+            
+            swipePreview = {
+                startX: touchStartX,
+                startY: touchStartY,
+                currentX: touchStartX,
+                currentY: touchStartY,
+                power: 0
+            };
+        }
+        
+        function handleMouseMove(e) {
             mouseX = e.clientX;
             mouseY = e.clientY;
             
+            if (gameActive && isSwiping) {
+                swipePreview.currentX = mouseX;
+                swipePreview.currentY = mouseY;
+                
+                const dx = mouseX - touchStartX;
+                const dy = mouseY - touchStartY;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                swipePreview.power = Math.min(distance / 200, 1);
+                
+                powerFillEl.style.height = (swipePreview.power * 100) + '%';
+                powerMeterContainerEl.style.display = 'block';
+            }
+            
+            // Update crosshair
             if (gameActive) {
                 crosshairEl.classList.add('show');
                 crosshairEl.style.left = mouseX + 'px';
@@ -791,28 +944,37 @@
             } else {
                 crosshairEl.classList.remove('show');
             }
-            
-            if (gameActive && !isCharging) {
-                const aimX = (mouseX - canvas.width / 2) / canvas.width * 200;
-                const aimY = (mouseY - canvas.height / 3) / canvas.height * 100;
-                goalie.targetX = aimX * goalie.prediction;
-                goalie.targetY = NET_Y_OFFSET + Math.max(-50, Math.min(20, aimY * 0.5));
-                
-                // Update goalie facing direction
-                if (aimX < -50) goalie.facing = 'left';
-                else if (aimX > 50) goalie.facing = 'right';
-                else goalie.facing = 'center';
-            }
         }
         
-        function shoot(e) {
-            if (!gameActive || !isCharging) return;
+        function handleMouseUp(e) {
+            if (!gameActive || !isSwiping) return;
             
-            isCharging = false;
+            const swipeTime = Date.now() - touchStartTime;
+            const dx = swipePreview.currentX - touchStartX;
+            const dy = swipePreview.currentY - touchStartY;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+            
+            if (distance > 30) {
+                const swipeSpeed = distance / swipeTime;
+                shootWithSwipe(dx, dy, distance, swipeSpeed);
+            }
+            
+            isSwiping = false;
+            swipePreview = null;
+            powerFillEl.style.height = '0%';
+        }
+        
+        function shootWithSwipe(dx, dy, distance, swipeSpeed) {
             shots++;
             updateUI();
             
-            // Shot properties
+            player.shooting = true;
+            player.shootTimer = 0;
+            
+            // Calculate shot power based on swipe distance and speed
+            shotPower = Math.min((distance / 200) * (swipeSpeed / 0.5), 1);
+            
+            // Shot properties based on type
             let velocity, accuracy, elevation;
             
             switch(shotType) {
@@ -832,21 +994,19 @@
                     elevation = 0.05 + Math.random() * 0.25;
             }
             
-            const centerX = canvas.width / 2;
-            const centerY = canvas.height - 150;
-            
-            const dx = mouseX - centerX;
-            const dy = mouseY - centerY;
-            const angle = Math.atan2(dy, dx);
+            // Calculate shot direction from swipe
+            const angle = Math.atan2(-dy, dx); // Negative dy for intuitive up-swipe
             
             const baseVelocity = velocity;
             const aimX = Math.cos(angle) * baseVelocity;
-            const aimY = Math.sin(angle) * baseVelocity;
+            const aimY = Math.sin(angle) * baseVelocity * 0.5;
+            const aimZ = Math.abs(Math.sin(angle)) * baseVelocity * 0.8;
             
+            // Add accuracy spread
             const accuracySpread = (1 - accuracy) * 0.3;
             const vx = aimX + (Math.random() - 0.5) * accuracySpread * baseVelocity;
-            const vy = aimY * 0.5;
-            const vz = Math.abs(aimY) * 0.8;
+            const vy = aimY;
+            const vz = aimZ + 15;
             
             const puck = {
                 x: 0,
@@ -854,7 +1014,7 @@
                 z: 0,
                 vx: vx,
                 vy: vy,
-                vz: vz + 15,
+                vz: vz,
                 size: 8,
                 rotation: 0,
                 rotationSpeed: Math.random() * 0.3 + 0.1,
@@ -864,14 +1024,14 @@
             
             pucks.push(puck);
             
-            // Create ice spray
-            for (let i = 0; i < 30; i++) {
+            // Create ice spray - reduced for mobile
+            for (let i = 0; i < 15; i++) {
                 const particle = getParticle();
                 if (particle) {
                     particle.x = 0;
                     particle.y = 50;
                     particle.z = 0;
-                    particle.vx = (Math.random() - 0.5) * 8;
+                    particle.vx = (Math.random() - 0.5) * 8 - vx * 0.1;
                     particle.vy = -Math.random() * 5;
                     particle.vz = Math.random() * 3;
                     particle.life = 1;
@@ -881,20 +1041,32 @@
                 }
             }
             
-            if (canVibrate) navigator.vibrate(25);
+            // Haptic feedback based on shot power
+            if (canVibrate) {
+                const vibrationStrength = Math.floor(25 + shotPower * 50);
+                navigator.vibrate(vibrationStrength);
+            }
             
-            shotPower = 0;
-            powerFillEl.style.height = '0%';
+            // Update goalie stance based on shot
+            const goalieX = vx * (NET_DISTANCE / vz);
+            const goalieY = vy * (NET_DISTANCE / vz);
             
-            // Update goalie stance
-            if (puck.vy < -10) {
+            goalie.targetX = goalieX * goalie.prediction;
+            goalie.targetY = NET_Y_OFFSET + Math.max(-50, Math.min(20, goalieY * 0.5));
+            
+            if (vy < -10) {
                 goalie.stance = 'glove';
-            } else if (puck.vy > -5) {
+            } else if (vy > -5) {
                 goalie.stance = 'butterfly';
             } else {
                 goalie.stance = 'blocker';
             }
             goalie.stanceTimer = 0;
+            
+            // Update goalie facing
+            if (goalieX < -50) goalie.facing = 'left';
+            else if (goalieX > 50) goalie.facing = 'right';
+            else goalie.facing = 'center';
         }
         
         function startGame(mode) {
@@ -943,16 +1115,38 @@
         function updateGoalie(dt) {
             if (gameMode === 'practice') return;
             
+            // Enhanced goalie AI - track puck if exists
+            if (pucks.length > 0) {
+                const closestPuck = pucks.reduce((closest, puck) => 
+                    !closest || puck.z < closest.z ? puck : closest, null);
+                
+                if (closestPuck && closestPuck.z < NET_DISTANCE * 0.8) {
+                    // Predict where puck will be when it reaches the net
+                    const timeToNet = (NET_DISTANCE - closestPuck.z) / closestPuck.vz;
+                    const predictedX = closestPuck.x + closestPuck.vx * timeToNet;
+                    const predictedY = closestPuck.y + closestPuck.vy * timeToNet;
+                    
+                    goalie.targetX = predictedX * goalie.prediction;
+                    goalie.targetY = NET_Y_OFFSET + Math.max(-50, Math.min(20, 
+                        (predictedY - NET_Y_OFFSET) * goalie.prediction * 0.7));
+                }
+            }
+            
             const dx = goalie.targetX - goalie.x;
             const dy = goalie.targetY - goalie.y;
             
-            goalie.vx += dx * goalie.speed * 60 * dt;
-            goalie.vy += dy * goalie.speed * 60 * dt;
-            goalie.vx *= Math.pow(0.9, 60 * dt);
-            goalie.vy *= Math.pow(0.9, 60 * dt);
+            // More responsive movement
+            goalie.vx += dx * goalie.speed * 80 * dt;
+            goalie.vy += dy * goalie.speed * 80 * dt;
+            goalie.vx *= Math.pow(0.85, 60 * dt);
+            goalie.vy *= Math.pow(0.85, 60 * dt);
             
             goalie.x += goalie.vx * dt * 60;
             goalie.y += goalie.vy * dt * 60;
+            
+            // Clamp goalie position
+            goalie.x = Math.max(-120, Math.min(120, goalie.x));
+            goalie.y = Math.max(NET_Y_OFFSET - 60, Math.min(NET_Y_OFFSET + 30, goalie.y));
             
             if (goalie.saveAnimation > 0) {
                 goalie.saveAnimation -= 3 * dt;
@@ -969,7 +1163,7 @@
                 goalie.stanceTimer = 30;
             }
             
-            // Update animation frame
+            // Update animation frame for idle animation
             goalie.animationFrame += dt * 10;
         }
         
@@ -990,10 +1184,11 @@
                 const puck = pucks[i];
                 
                 if (puck.z < NET_DISTANCE) {
-                    puck.trail.push({ x: puck.x, y: puck.y, z: puck.z });
-                    if (puck.trail.length > 20) {
+                    // Optimized trail management
+                    if (puck.trail.length > 10) {
                         puck.trail.shift();
                     }
+                    puck.trail.push({ x: puck.x, y: puck.y, z: puck.z });
                 }
                 
                 puck.x += puck.vx * dt * 60;
@@ -1089,7 +1284,11 @@
             score += 100;
             showAnnouncement('GOAL!!!');
             
-            if (canVibrate) navigator.vibrate([100, 50, 100]);
+            // Enhanced haptic feedback for goals
+            if (canVibrate) navigator.vibrate([100, 50, 100, 50, 150]);
+            
+            // Trigger screen shake
+            screenShake = 1;
             
             if (puck.y < NET_Y_OFFSET - 20) {
                 score += 50;
@@ -1099,7 +1298,7 @@
                 setTimeout(() => showAnnouncement('FIVE HOLE!'), 500);
             }
             
-            for (let i = 0; i < 60; i++) {
+            for (let i = 0; i < 30; i++) {
                 const particle = getParticle();
                 if (particle) {
                     particle.x = puck.x;
@@ -1117,6 +1316,18 @@
             
             pucks.splice(index, 1);
             updateUI();
+        }
+        
+        function updateScreenShake(dt) {
+            if (screenShake > 0) {
+                screenShake -= dt * 3;
+                const intensity = screenShake * 20;
+                screenShakeX = (Math.random() - 0.5) * intensity;
+                screenShakeY = (Math.random() - 0.5) * intensity;
+            } else {
+                screenShakeX = 0;
+                screenShakeY = 0;
+            }
         }
         
         function handlePost(puck, index) {
@@ -1165,10 +1376,19 @@
             });
         }
         
-        function showAnnouncement(text) {
+        function showAnnouncement(text, isGoal = false) {
             announcementEl.textContent = text;
-            announcementEl.classList.add('show');
-            setTimeout(() => announcementEl.classList.remove('show'), 1500);
+            announcementEl.classList.remove('show', 'goal');
+            
+            if (isGoal || text === 'GOAL!!!') {
+                announcementEl.classList.add('goal');
+            } else {
+                announcementEl.classList.add('show');
+            }
+            
+            setTimeout(() => {
+                announcementEl.classList.remove('show', 'goal');
+            }, isGoal ? 2000 : 1500);
         }
         
         function updateUI() {
@@ -1407,6 +1627,10 @@
             
             ctx.save();
             ctx.translate(pos.x, pos.y);
+            
+            // Subtle idle animation - slight sway
+            const idleSway = Math.sin(goalie.animationFrame * 0.05) * 2;
+            ctx.translate(idleSway, 0);
             
             // Draw based on stance
             if (goalie.stance === 'butterfly') {
@@ -1744,7 +1968,7 @@
         }
         
         function drawStick() {
-            if (!isCharging && pucks.length === 0 && !player.shooting) {
+            if (!isSwiping && pucks.length === 0 && !player.shooting) {
                 const centerX = canvas.width / 2;
                 const centerY = canvas.height - 150;
                 const angle = Math.atan2(mouseY - centerY, mouseX - centerX);
@@ -1798,6 +2022,63 @@
             }
         }
         
+        function drawAimPrediction() {
+            if (!isSwiping || !swipePreview) return;
+            
+            const dx = swipePreview.currentX - swipePreview.startX;
+            const dy = swipePreview.currentY - swipePreview.startY;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+            
+            if (distance < 10) return; // Don't show for tiny movements
+            
+            // Calculate predicted shot angle
+            const angle = Math.atan2(-dy, dx);
+            const power = Math.min(distance / 200, 1);
+            
+            // Start position (player)
+            const startPos = project3D(0, 50, 0);
+            
+            // Calculate end position based on angle and power
+            const velocity = 20 + power * 15; // Base velocity for wrist shot
+            const predictedX = Math.cos(angle) * velocity * 10;
+            const predictedZ = NET_DISTANCE;
+            const predictedY = NET_Y_OFFSET + Math.sin(angle) * velocity * 3;
+            
+            const endPos = project3D(predictedX, predictedY, predictedZ);
+            
+            // Draw prediction line
+            ctx.save();
+            ctx.strokeStyle = `rgba(0, 255, 255, ${0.3 + power * 0.4})`;
+            ctx.lineWidth = 2 + power * 3;
+            ctx.setLineDash([10, 5]);
+            ctx.lineCap = 'round';
+            
+            ctx.beginPath();
+            ctx.moveTo(startPos.x, startPos.y);
+            
+            // Add curve to show arc
+            const midZ = predictedZ / 2;
+            const midY = 50 + (predictedY - 50) * 0.5 - 30; // Arc height
+            const midPos = project3D(predictedX * 0.5, midY, midZ);
+            
+            ctx.quadraticCurveTo(midPos.x, midPos.y, endPos.x, endPos.y);
+            ctx.stroke();
+            
+            // Draw impact point
+            ctx.fillStyle = `rgba(255, 255, 0, ${0.5 + power * 0.5})`;
+            ctx.beginPath();
+            ctx.arc(endPos.x, endPos.y, 5 + power * 10, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Show power percentage
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 16px "Press Start 2P"';
+            ctx.textAlign = 'center';
+            ctx.fillText(`${Math.floor(power * 100)}%`, startPos.x, startPos.y - 30);
+            
+            ctx.restore();
+        }
+        
         function drawRinkDetails() {
             // Draw face-off dots
             ctx.fillStyle = '#ff0000';
@@ -1849,6 +2130,11 @@
             updatePlayer(deltaTime);
             updatePucks(deltaTime);
             updateParticles(deltaTime);
+            updateScreenShake(deltaTime);
+            
+            // Apply screen shake
+            ctx.save();
+            ctx.translate(screenShakeX, screenShakeY);
             
             // Update charge power
             if (isCharging) {
@@ -1883,6 +2169,10 @@
             pucks.forEach(puck => drawPuck(puck));
             drawPlayerSprite();
             drawStick();
+            drawAimPrediction();
+            
+            // Restore canvas transform
+            ctx.restore();
             
             // Check game over conditions
             if (gameMode === 'classic' && shots >= 5 && pucks.length === 0) {

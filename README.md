@@ -1,54 +1,56 @@
-# Neon Hockey Shootout 🏒
+# Neon Hockey Shootout
 
 A realistic first-person hockey shooting game with 3D physics and adaptive AI goalie. Test your shooting skills in this immersive hockey experience!
 
-## 🎮 Play Now
+## Play Now
 **[Play Neon Hockey Shootout](https://erikgoulet.github.io/Neon-Hockey-Shootout/)**
 
-## 📖 How to Play
+## How to Play
 
 ### Basic Gameplay
-1. **Aim** - Move your mouse/finger to aim where you want to shoot
-2. **Charge** - Hold down mouse/touch to charge your shot power
-3. **Release** - Let go to shoot the puck
-4. **Score** - Get the puck past the goalie and into the net!
+1. **Aim**: Start your swipe where you want to shoot from
+2. **Swipe**: Drag in the direction you want to shoot
+3. **Power**: Longer swipe = more power
+4. **Score**: Get the puck past the goalie and into the net!
 
 ### Controls
 
-#### Desktop 🖱️
-- **Mouse Movement**: Aim your shot
-- **Click and Hold**: Charge shot power
-- **Release Click**: Shoot the puck
+#### Desktop
+- **Mouse Movement**: Position your shot
+- **Click and Drag**: Swipe to shoot (direction + distance = shot)
+- **Aim Prediction**: See where your shot will go while dragging
 
-#### Mobile 📱
-- **Touch and Drag**: Aim your shot
-- **Touch and Hold**: Charge shot power
-- **Release Touch**: Shoot the puck
+#### Mobile (Optimized)
+- **Swipe to Shoot**: Natural swipe gesture for shooting
+- **Swipe Distance**: Controls shot power
+- **Swipe Direction**: Controls shot aim
+- **Aim Prediction Line**: Shows shot trajectory while swiping
 - **Bottom Buttons**: Select shot type (Wrist/Slap/Backhand)
+- **Haptic Feedback**: Feel every shot and save
 
-## 🎯 Game Modes
+## Game Modes
 
 ### Classic Mode
 - **5 shots** to get the highest score possible
 - Perfect for quick practice sessions
 - Try to beat your high score!
 
-### Time Attack ⏱️
+### Time Attack
 - **60 seconds** to score as many goals as possible
 - Fast-paced, continuous action
-- No shot limit - keep shooting!
+- No shot limit, keep shooting!
 
-### Sudden Death 💀
+### Sudden Death
 - Game ends on the **first save**
 - Ultimate pressure mode
 - Every shot counts!
 
-### Practice Mode 🎪
-- **No goalie** - perfect your aim
+### Practice Mode
+- **No goalie**, perfect your aim
 - Great for learning shot mechanics
 - Practice different shot types and angles
 
-## 🏒 Shot Types
+## Shot Types
 
 ### Wrist Shot
 - **Accuracy**: High (90%)
@@ -68,24 +70,24 @@ A realistic first-person hockey shooting game with 3D physics and adaptive AI go
 - **Best for**: Deceptive angles
 - **Strategy**: Surprise the goalie with unusual trajectories
 
-## 🎚️ Difficulty Levels
+## Difficulty Levels
 
-### Easy 🟢
+### Easy
 - **Goalie Speed**: Slow
 - **Prediction**: 50% accuracy
 - **Best for**: Beginners
 
-### Medium 🟡
+### Medium
 - **Goalie Speed**: Moderate
 - **Prediction**: 70% accuracy
 - **Best for**: Regular players
 
-### Hard 🔴
+### Hard
 - **Goalie Speed**: Fast
 - **Prediction**: 90% accuracy
 - **Best for**: Expert players
 
-## 🏆 Scoring System
+## Scoring System
 
 ### Base Points
 - **Goal**: 100 points
@@ -97,21 +99,26 @@ A realistic first-person hockey shooting game with 3D physics and adaptive AI go
 - **Save**: Goalie blocks your shot
 - **Miss**: Shot goes wide of the net
 
-## 🎮 Game Mechanics
+## Game Mechanics
 
 ### Shot Power System
-- **Charging**: Hold to increase power (0-100%)
-- **Visual Indicator**: Power bar fills from green → yellow → red
+- **Swipe Mechanics**: Distance of swipe determines power
+- **Visual Indicator**: Power bar fills during swipe
+- **Aim Prediction**: See trajectory before releasing
+- **Power Display**: Real-time percentage shown
 - **Trade-off**: More power = less accuracy
 
 ### Goalie AI
-- **Adaptive Movement**: Goalie predicts your aim
+- **Enhanced Prediction**: AI tracks puck trajectory in real-time
+- **Responsive Movement**: Improved reaction times and positioning
 - **Multiple Stances**: 
   - Standing (normal saves)
   - Butterfly (low shots)
   - Glove save (high shots)
   - Blocker save (mid-level shots)
-- **Difficulty Scaling**: AI gets smarter on harder difficulties
+- **Idle Animations**: Subtle movements for realism
+- **Position Clamping**: Stays within realistic goalie area
+- **Difficulty Scaling**: AI prediction accuracy varies by level
 
 ### Physics Engine
 - **Puck Movement**: Realistic trajectory with gravity
@@ -119,13 +126,13 @@ A realistic first-person hockey shooting game with 3D physics and adaptive AI go
 - **Rebounds**: Pucks bounce off goalie realistically
 - **3D Perspective**: True depth perception
 
-## 💡 Pro Tips
+## Pro Tips
 
 ### Aiming Strategy
-1. **Watch the goalie** - They move to predict your shot
-2. **Aim for corners** - Harder for goalie to reach
-3. **Mix up shot types** - Keep the goalie guessing
-4. **Use less power** - Sometimes accuracy beats power
+1. **Watch the goalie**: They move to predict your shot
+2. **Aim for corners**: Harder for goalie to reach
+3. **Mix up shot types**: Keep the goalie guessing
+4. **Use less power**: Sometimes accuracy beats power
 
 ### Scoring Tips
 - **Top Shelf**: Aim high in the corners for bonus points
@@ -134,24 +141,34 @@ A realistic first-person hockey shooting game with 3D physics and adaptive AI go
 - **Patience**: Don't always shoot at full power
 
 ### Advanced Techniques
-- **Quick Release**: Tap for minimal charge on wrist shots
-- **Power Slapper**: Full charge + slap shot for maximum velocity
+- **Quick Flick**: Short, fast swipe for snap shots
+- **Power Swipe**: Long swipe + slap shot for maximum velocity
+- **Direction Change**: Curve your swipe to add deception
+- **Aim Prediction Mastery**: Use the trajectory line to find gaps
 - **Backhand Surprise**: Use rarely to catch goalie off-guard
 - **Rebound Awareness**: Watch for pucks bouncing back
 
-## 📱 Mobile Features
+## Mobile Features
 
-### Optimizations
-- **Touch Controls**: Designed for one-finger play
-- **Haptic Feedback**: Feel the shots (vibration)
-- **Responsive Design**: Adapts to any screen size
-- **Portrait/Landscape**: Works in both orientations
+### Mobile-First Design
+- **Swipe Controls**: Natural gesture-based shooting
+- **Enhanced Haptics**: Different vibration patterns for:
+  - Shot power levels
+  - Goals (celebration pattern)
+  - Saves and posts
+  - Touch feedback
+- **Performance Optimized**: 
+  - Reduced particle effects (50 max)
+  - Optimized trail rendering
+  - Efficient memory management
+- **Responsive Design**: Perfect for any screen size
+- **Portrait Mode**: Optimized vertical layout
 
 ### Add to Home Screen
-**iOS**: Safari → Share → Add to Home Screen  
-**Android**: Chrome → Menu → Add to Home Screen
+**iOS**: Safari > Share > Add to Home Screen  
+**Android**: Chrome > Menu > Add to Home Screen
 
-## 🔧 Technical Details
+## Technical Details
 
 ### Technologies Used
 - **HTML5 Canvas**: Game rendering
@@ -162,11 +179,15 @@ A realistic first-person hockey shooting game with 3D physics and adaptive AI go
 
 ### Performance
 - **60 FPS** target framerate
-- **Optimized** for mobile devices
+- **Mobile Optimized**: 
+  - Reduced particle count for better performance
+  - Efficient canvas rendering
+  - Optimized animation loops
 - **No external dependencies**
 - **Lightweight**: < 100KB total
+- **Battery Efficient**: Optimized for mobile play sessions
 
-## 🐛 Troubleshooting
+## Troubleshooting
 
 ### Game Won't Start
 - Refresh the page
@@ -182,9 +203,18 @@ A realistic first-person hockey shooting game with 3D physics and adaptive AI go
 - Restart your device
 - Try Chrome browser for best performance
 
-## 📈 Version History
+## Version History
 
-### v2.0 (Current)
+### v3.0 (Current) Mobile-First Update
+- **New Swipe Controls**: Intuitive swipe-to-shoot mechanics
+- **Aim Prediction Line**: See your shot trajectory before releasing
+- **Enhanced Goalie AI**: Real-time puck tracking and better positioning
+- **Visual Effects**: Screen shake on goals, enhanced celebrations
+- **Performance Optimizations**: Better mobile performance
+- **Improved Haptics**: Context-aware vibration patterns
+- **Sound System**: Foundation for future audio features
+
+### v2.0
 - Fixed control scheme with dedicated shot buttons
 - Added haptic feedback for mobile
 - Improved difficulty settings
@@ -196,18 +226,23 @@ A realistic first-person hockey shooting game with 3D physics and adaptive AI go
 - 3 game modes
 - Mobile support
 
-## 🎯 Future Updates
-- Sound effects and music
+## Future Updates
+- Sound effects and music (framework ready)
 - Online leaderboards
-- More shot types
+- More shot types (snap shot, one-timer)
 - Multiplayer mode
 - Tournament system
+- Accuracy challenges with targets
+- Career progression
+- More goalie personalities
+- Ice surface wear effects
+- Replay system for goals
 
-## 👨‍💻 Developer
+## Developer
 
 Created by Erik Goulet  
 [Report Issues](https://github.com/erikgoulet/Neon-Hockey-Shootout/issues)
 
 ---
 
-**Enjoy the game! 🏒**
+**Enjoy the game!**

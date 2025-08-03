@@ -673,6 +673,7 @@
         let score = 0;
         let shots = 0;
         let saves = 0;
+        let goals = 0;
         let shotPower = 0;
         let isCharging = false;
         let mouseX = 0;
@@ -1075,6 +1076,7 @@
             score = 0;
             shots = 0;
             saves = 0;
+            goals = 0;
             pucks = [];
             rebounds = [];
             
@@ -1282,6 +1284,7 @@
         
         function handleGoal(puck, index) {
             score += 100;
+            goals++;
             showAnnouncement('GOAL!!!');
             
             // Enhanced haptic feedback for goals
@@ -2186,8 +2189,7 @@
         function endGame() {
             gameActive = false;
             
-            const accuracy = shots > 0 ? Math.round(((shots - saves) / shots) * 100) : 0;
-            const goals = shots - saves;
+            const accuracy = shots > 0 ? Math.round((goals / shots) * 100) : 0;
             
             document.getElementById('finalScore').textContent = score;
             document.getElementById('finalAccuracy').textContent = accuracy + '%';
@@ -2209,6 +2211,7 @@
             score = 0;
             shots = 0;
             saves = 0;
+            goals = 0;
             shotPower = 0;
             isCharging = false;
             pucks = [];

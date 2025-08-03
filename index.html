@@ -210,34 +210,36 @@
         justify-content: center;
         align-items: center;
         z-index: 100;
+        overflow-y: auto;
+        padding: 20px;
     }
     
     #startScreen h1 {
-        font-size: min(5.25rem, 15vw);
+        font-size: 72px;
         color: #fff;
         text-shadow: 6px 6px 12px rgba(0,0,0,0.8);
-        margin-bottom: 2.5rem;
+        margin-bottom: 40px;
         letter-spacing: 6px;
     }
     
     .difficulty-selector {
         display: flex;
-        gap: 0.625rem;
-        margin-bottom: 1.875rem;
+        gap: 10px;
+        margin-bottom: 30px;
         justify-content: center;
     }
     
     .difficulty-label {
         color: #ccc;
-        margin-bottom: 1.25rem;
-        font-size: 1.125rem;
+        margin-bottom: 20px;
+        font-size: 18px;
     }
     
     .menu-buttons {
         display: flex;
         flex-direction: column;
-        gap: 0.9375rem;
-        margin-top: 1.25rem;
+        gap: 15px;
+        margin-top: 20px;
     }
     
     .menu-button {
@@ -371,42 +373,44 @@
         background: rgba(0, 0, 0, 0.95);
         border: 3px solid #0ff;
         border-radius: 10px;
-        padding: 2rem;
+        padding: 30px;
         text-align: center;
         display: none;
         z-index: 50;
-        min-width: 300px;
+        max-width: 90%;
+        width: 400px;
     }
     
     .game-over-screen h2 {
         color: #ff0000;
-        font-size: 2.5rem;
-        margin-bottom: 1rem;
+        font-size: 36px;
+        margin-bottom: 20px;
         text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
     }
     
     .stats-row {
         display: flex;
         justify-content: space-between;
-        margin: 0.5rem 0;
-        font-size: 1.25rem;
+        margin: 10px 0;
+        font-size: 20px;
         color: #0ff;
     }
     
     .game-over-buttons {
         display: flex;
-        gap: 1rem;
-        margin-top: 1.5rem;
+        gap: 15px;
+        margin-top: 25px;
         justify-content: center;
+        flex-wrap: wrap;
     }
     
     .game-over-button {
         background: #ff0000;
         border: none;
         color: #fff;
-        padding: 0.75rem 1.5rem;
+        padding: 12px 24px;
         font-family: 'Bebas Neue', sans-serif;
-        font-size: 1.25rem;
+        font-size: 20px;
         cursor: pointer;
         transition: all 0.3s;
         border-radius: 5px;
@@ -418,33 +422,65 @@
     }
     
     @media (max-width: 768px) {
-        .score-item {
-            font-size: 1.125rem;
-            padding: 0.5rem 0.9375rem;
+        #startScreen h1 {
+            font-size: 48px;
+            margin-bottom: 20px;
         }
         
-        #startScreen h1 {
-            font-size: 3rem;
+        .difficulty-label {
+            font-size: 16px;
+            margin-bottom: 15px;
+        }
+        
+        .difficulty-button {
+            font-size: 14px;
+            padding: 8px 15px;
         }
         
         .menu-button {
-            font-size: 1.25rem;
-            padding: 0.9375rem 1.875rem;
+            font-size: 18px;
+            padding: 12px 25px;
+            min-width: 180px;
+        }
+        
+        .score-item {
+            font-size: 16px;
+            padding: 6px 12px;
         }
         
         .announcement {
-            font-size: 3rem;
+            font-size: 36px;
         }
         
         .shot-button {
-            font-size: 0.875rem;
-            padding: 0.75rem 1rem;
+            font-size: 14px;
+            padding: 10px 14px;
         }
         
         .home-button {
-            width: 2.8125rem;
-            height: 2.8125rem;
-            font-size: 1.25rem;
+            top: 70px;
+            right: 10px;
+            width: 40px;
+            height: 40px;
+            font-size: 18px;
+        }
+        
+        .game-over-screen {
+            padding: 20px;
+            width: 320px;
+        }
+        
+        .game-over-screen h2 {
+            font-size: 28px;
+        }
+        
+        .stats-row {
+            font-size: 16px;
+        }
+        
+        .game-over-button {
+            font-size: 16px;
+            padding: 10px 20px;
         }
     }
 </style>
@@ -471,6 +507,7 @@
 
 <div class="shot-type" id="shotType">WRIST SHOT</div>
 <div class="power-meter">
+    <div class="power-label">SHOT POWER</div>
     <div class="power-fill" id="powerFill"></div>
 </div>
 
@@ -649,7 +686,11 @@
         document.querySelectorAll('.shot-button').forEach(btn => btn.classList.remove('active'));
         document.getElementById(type + 'Btn').classList.add('active');
         
-        if (canVibrate) navigator.vibrate(10);
+        // Hide game UI elements
+        document.querySelector('.shot-selector').style.display = 'none';
+        document.querySelector('.power-meter').style.display = 'none';
+        document.querySelector('.shot-type').style.display = 'none';
+        document.querySelector('.controls').style.display = 'none';
     }
     
     function setDifficulty(level) {
@@ -731,17 +772,33 @@
                 elevation = 0.05 + Math.random() * 0.25;
         }
         
-        // Create puck
-        const aimX = (mouseX - canvas.width / 2) / canvas.width;
-        const aimY = (canvas.height / 2 - mouseY) / canvas.height;
+        // Calculate actual aim direction from mouse position
+        const centerX = canvas.width / 2;
+        const centerY = canvas.height - 100; // Shot origin
+        
+        // Get angle to mouse position
+        const dx = mouseX - centerX;
+        const dy = mouseY - centerY;
+        const angle = Math.atan2(dy, dx);
+        
+        // Calculate velocity components based on actual aim
+        const baseVelocity = velocity;
+        const aimX = Math.cos(angle) * baseVelocity;
+        const aimY = Math.sin(angle) * baseVelocity;
+        
+        // Add accuracy variation
+        const accuracySpread = (1 - accuracy) * 0.3;
+        const vx = aimX + (Math.random() - 0.5) * accuracySpread * baseVelocity;
+        const vy = aimY * 0.5; // Scale Y velocity for better trajectory
+        const vz = Math.abs(aimY); // Forward velocity based on vertical aim
         
         const puck = {
             x: 0,
             y: 0,
             z: 0,
-            vx: aimX * velocity * accuracy + (Math.random() - 0.5) * (1 - accuracy) * 10,
-            vy: -elevation * velocity * 0.5,
-            vz: velocity,
+            vx: vx,
+            vy: vy,
+            vz: vz + 10, // Minimum forward velocity
             size: 8,
             rotation: 0,
             rotationSpeed: Math.random() * 0.3 + 0.1,
@@ -801,9 +858,16 @@
             goalie.x = 0;
         }
         
-        startScreenEl.style.display = 'none';
-        homeBtnEl.style.display = 'flex';
-        gameOverScreenEl.style.display = 'none';
+        document.getElementById('startScreen').style.display = 'none';
+        document.getElementById('homeBtn').style.display = 'flex';
+        document.getElementById('gameOverScreen').style.display = 'none';
+        
+        // Show game UI elements
+        document.querySelector('.shot-selector').style.display = 'flex';
+        document.querySelector('.power-meter').style.display = 'block';
+        document.querySelector('.shot-type').style.display = 'block';
+        document.querySelector('.controls').style.display = 'block';
+        
         updateUI();
         lastTime = performance.now();
         gameLoop(lastTime);
